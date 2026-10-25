@@ -4,27 +4,36 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const revealFromScroll = (scope, selector, trigger, options = {}) => {
-  const targets = scope.querySelectorAll(selector);
-  if (!targets.length) return;
+const SECTION_REVEAL_OFFSET = 120;
+const SECTION_CONTENT_REVEAL_DELAY = 90;
 
-  gsap.fromTo(
-    targets,
-    { autoAlpha: 0, y: options.y ?? 34, filter: 'blur(7px)' },
-    {
-      autoAlpha: 1,
-      y: 0,
-      filter: 'blur(0px)',
-      duration: options.duration ?? 0.8,
-      stagger: options.stagger ?? 0.12,
+const createSectionReveal = (section, titleSelector, contentSelector) => {
+  const titles = section.querySelectorAll(titleSelector);
+  const content = section.querySelectorAll(contentSelector);
+  if (!titles.length && !content.length) return;
+
+  const hiddenState = { autoAlpha: 0, y: 24, filter: 'blur(6px)' };
+  const visibleState = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+  const trigger = titles[0] || section;
+
+  const revealTargets = (targets, delay = 0, stagger = 0.12) => {
+    if (!targets.length) return;
+
+    gsap.fromTo(targets, hiddenState, {
+      ...visibleState,
+      duration: 0.65,
+      stagger,
       ease: 'power3.out',
       scrollTrigger: {
         trigger,
-        start: options.start ?? 'top 82%',
-        toggleActions: 'play reverse play reverse',
+        start: `top bottom-=${SECTION_REVEAL_OFFSET + delay}`,
+        toggleActions: 'play none none reverse',
       },
-    },
-  );
+    });
+  };
+
+  revealTargets(titles, 0, 0.08);
+  revealTargets(content, SECTION_CONTENT_REVEAL_DELAY);
 };
 
 export default function usePortfolioAnimations(scopeRef, enabled) {
@@ -51,17 +60,6 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
           delay: index * -1.4,
         });
       });
-
-      const lanyard = scope.querySelector('.lanyard-card-container');
-      if (lanyard) {
-        gsap.to(lanyard, {
-          y: -12,
-          duration: 3.4,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-        });
-      }
 
       const hero = scope.querySelector('.hero-root-section');
       if (hero) {
@@ -173,81 +171,27 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
         });
       }
 
-      scope.querySelectorAll('main section:not(.hero-root-section)').forEach((section) => {
-        const heading = section.querySelector('.section-display-title');
-        if (!heading) return;
-        gsap.fromTo(
-          heading,
-          { autoAlpha: 0, y: 24 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 86%',
-              toggleActions: 'play reverse play reverse',
-            },
-          },
-        );
+      const sectionReveals = [
+        ['.about-root-section', '.section-display-title', '.about-intro, .about-portrait-stage, .about-bio'],
+        ['.experience-section', '.experience-group h2', '.experience-card, .experience-stat-card'],
+        ['.spotify-section', '.spotify-copy h2', '.spotify-card'],
+        [
+          '.portfolio-root-section',
+          '.section-display-title',
+          '.portfolio-tab-bar, .portfolio-projects-view, .portfolio-skills-view, .portfolio-certificates-view, .portfolio-awards-view',
+        ],
+        ['.contact-root-section', '.section-display-title', '.contact-panel, .contact-comments-panel'],
+        [
+          '.footer-root',
+          '.footer-logo, .footer-col-heading',
+          '.footer-tagline, .footer-links-list, .footer-social-row, .footer-bottom-row',
+        ],
+      ];
+
+      sectionReveals.forEach(([sectionSelector, titleSelector, contentSelector]) => {
+        const section = scope.querySelector(sectionSelector);
+        if (section) createSectionReveal(section, titleSelector, contentSelector);
       });
-
-      const about = scope.querySelector('.about-root-section');
-      if (about) {
-        revealFromScroll(about, '.about-intro, .about-portrait-stage, .about-bio', about, {
-          start: 'top 78%',
-          y: 38,
-          stagger: 0.16,
-        });
-      }
-
-      const experience = scope.querySelector('.experience-section');
-      if (experience) {
-        revealFromScroll(experience, '.experience-group, .experience-stat-card', experience, {
-          start: 'top 78%',
-          y: 32,
-          stagger: 0.1,
-        });
-      }
-
-      const spotify = scope.querySelector('.spotify-section');
-      if (spotify) {
-        revealFromScroll(spotify, '.spotify-card', spotify, {
-          start: 'top 84%',
-          y: 28,
-          duration: 0.9,
-          stagger: 0,
-        });
-      }
-
-      const portfolio = scope.querySelector('.portfolio-root-section');
-      if (portfolio) {
-        revealFromScroll(portfolio, '.portfolio-tab-bar, .portfolio-project-card', portfolio, {
-          start: 'top 78%',
-          y: 42,
-          duration: 0.9,
-          stagger: 0.14,
-        });
-      }
-
-      const contact = scope.querySelector('.contact-root-section');
-      if (contact) {
-        revealFromScroll(contact, '.contact-panel, .contact-comments-panel', contact, {
-          start: 'top 78%',
-          y: 32,
-          stagger: 0.15,
-        });
-      }
-
-      const footer = scope.querySelector('.footer-root');
-      if (footer) {
-        revealFromScroll(footer, '.footer-top-row, .footer-bottom-row', footer, {
-          start: 'top 90%',
-          y: 20,
-          stagger: 0.12,
-        });
-      }
     }, scope);
 
     ScrollTrigger.refresh();

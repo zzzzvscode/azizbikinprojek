@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { liquidMetalFragmentShader, ShaderMount } from '@paper-design/shaders';
+import '../style/LiquidMetalBorder.css';
 
-export default function LiquidMetalBorder() {
+export default function LiquidMetalBorder({ className = '' }) {
   const shaderContainerRef = useRef(null);
 
   useEffect(() => {
@@ -40,5 +41,11 @@ export default function LiquidMetalBorder() {
     };
   }, []);
 
-  return <div ref={shaderContainerRef} className="experience-metal-border" aria-hidden="true" />;
+  return (
+    <div
+      ref={shaderContainerRef}
+      className={`liquid-metal-border${className ? ` ${className}` : ''}`}
+      aria-hidden="true"
+    />
+  );
 }

@@ -38,6 +38,7 @@ import dataSiswa from '../assets/Project/dataSiswa.png'
 import SkeletonImage from './SkeletonImage';
 import BorderGlow from './BorderGlow';
 import '../style/PortfolioSection.css';
+import LiquidMetalBorder from './LiquidMetalBorder';
 
 export const PROJECTS_DATA = [
   {
@@ -263,53 +264,42 @@ export default function PortfolioSection({ onOpenProject }) {
             {/* Projects Grid */}
             <div className="portfolio-cards-grid">
               {PROJECTS_DATA.map((proj) => (
-                <BorderGlow
-                  key={proj.id}
-                  className="portfolio-project-card"
-                  as="article"
-                  edgeSensitivity={0}
-                  glowColor="200 90 75"
-                  backgroundColor="#080d18"
-                  borderRadius={20}
-                  glowRadius={28}
-                  glowIntensity={1.2}
-                  coneSpread={23}
-                  colors={['#38bdf8', '#3b82f6', '#a78bfa']}
-                  fillOpacity={0}
-                  animated
-                >
-                  <div
-                    className="portfolio-card-thumbnail"
-                    style={{ background: proj.image ? '#000' : proj.gradient }}
-                  >
-                    {proj.image && (
-                      <SkeletonImage
-                        className="portfolio-card-thumbnail-image"
-                        src={proj.image}
-                        alt={`Thumbnail ${proj.title}`}
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
-
-                  <div className="portfolio-card-body">
-                    <h3 className="portfolio-card-title">{proj.title}</h3>
-
-                    <p className="portfolio-card-desc">{proj.description}</p>
-
-                    <button
-                      type="button"
-                      className="portfolio-details-btn"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onOpenProject(proj.id);
-                      }}
+                <article key={proj.id} className="portfolio-project-card">
+                  <LiquidMetalBorder className="portfolio-project-metal-border" />
+                  <div className="portfolio-project-card-content">
+                    <div
+                      className="portfolio-card-thumbnail"
+                      style={{ background: proj.image ? '#000' : proj.gradient }}
                     >
-                      <span>Details</span>
-                      <ArrowRight size={20} aria-hidden="true" />
-                    </button>
+                      {proj.image && (
+                        <SkeletonImage
+                          className="portfolio-card-thumbnail-image"
+                          src={proj.image}
+                          alt={`Thumbnail ${proj.title}`}
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+
+                    <div className="portfolio-card-body">
+                      <h3 className="portfolio-card-title">{proj.title}</h3>
+
+                      <p className="portfolio-card-desc">{proj.description}</p>
+
+                      <button
+                        type="button"
+                        className="portfolio-details-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onOpenProject(proj.id);
+                        }}
+                      >
+                        <span>Details</span>
+                        <ArrowRight size={20} aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
-                </BorderGlow>
+                </article>
               ))}
             </div>
           </div>

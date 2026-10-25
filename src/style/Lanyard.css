@@ -41,9 +41,10 @@
   .lanyard-card-container.is-mobile {
     position: relative;
     inset: auto;
-    width: min(100%, 480px);
+    width: calc(100vw / var(--home-ui-scale, 0.9));
+    max-width: none;
     height: clamp(480px, 78svh, 720px);
     flex: 0 0 auto;
-    margin: 0 auto 12px;
+    margin: 0 calc(50% - 50vw) 12px;
   }
 }

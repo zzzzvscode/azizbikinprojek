@@ -1,4 +1,5 @@
 :root {
+  --home-ui-scale: 0.99;
   --font-display: "Verdana", Geneva, Tahoma, sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --col-bg: #050510;
@@ -82,6 +83,12 @@ body,
   position: relative;
   z-index: 3;
   zoom: 0.9;
+}
+
+@media (max-width: 767px) {
+  .home-ui-scale {
+    zoom: var(--home-ui-scale);
+  }
 }
 
 .home-page-container {

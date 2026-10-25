@@ -745,6 +745,13 @@
   font-size: 0.82rem;
 }
 
+.contact-comment-cooldown {
+  margin: -8px 0 0;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
 .contact-comments-list {
   max-height: 360px;
   margin-top: 12px;

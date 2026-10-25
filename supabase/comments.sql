@@ -8,7 +8,8 @@ create table if not exists public.comments (
 
 alter table public.comments enable row level security;
 
-grant select, insert on table public.comments to anon, authenticated;
+grant select on table public.comments to anon, authenticated;
+revoke insert on table public.comments from anon, authenticated;
 revoke update, delete on table public.comments from anon, authenticated;
 
 drop policy if exists "Comments are readable by everyone" on public.comments;
@@ -18,13 +19,88 @@ create policy "Comments are readable by everyone"
   using (true);
 
 drop policy if exists "Anyone can post a comment" on public.comments;
-create policy "Anyone can post a comment"
-  on public.comments for insert
-  to anon, authenticated
-  with check (
-    char_length(trim(name)) between 1 and 50
-    and char_length(trim(comment)) between 1 and 500
+
+create table if not exists public.comment_rate_limits (
+  ip_hash text primary key check (ip_hash ~ '^[0-9a-f]{64}$'),
+  next_allowed_at timestamptz not null
+);
+
+create index if not exists comment_rate_limits_expiry_idx
+  on public.comment_rate_limits (next_allowed_at);
+
+alter table public.comment_rate_limits enable row level security;
+revoke all on table public.comment_rate_limits from anon, authenticated;
+
+create or replace function public.post_comment_with_rate_limit(
+  p_ip_hash text,
+  p_name text,
+  p_comment text,
+  p_avatar_url text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_next_allowed_at timestamptz;
+  v_retry_after_seconds integer;
+  v_comment public.comments%rowtype;
+begin
+  if p_ip_hash !~ '^[0-9a-f]{64}$'
+    or char_length(trim(p_name)) not between 1 and 50
+    or char_length(trim(p_comment)) not between 1 and 500
+    or (p_avatar_url is not null and char_length(p_avatar_url) > 100000) then
+    raise exception 'Invalid comment input';
+  end if;
+
+  delete from public.comment_rate_limits
+  where next_allowed_at < clock_timestamp() - interval '1 day';
+
+  insert into public.comment_rate_limits (ip_hash, next_allowed_at)
+  values (p_ip_hash, clock_timestamp() + interval '120 seconds')
+  on conflict (ip_hash) do update
+    set next_allowed_at = excluded.next_allowed_at
+    where public.comment_rate_limits.next_allowed_at <= clock_timestamp()
+  returning next_allowed_at into v_next_allowed_at;
+
+  if not found then
+    select greatest(
+      1,
+      ceil(extract(epoch from next_allowed_at - clock_timestamp()))::integer
+    )
+    into v_retry_after_seconds
+    from public.comment_rate_limits
+    where ip_hash = p_ip_hash;
+
+    return jsonb_build_object(
+      'allowed', false,
+      'retry_after_seconds', v_retry_after_seconds
+    );
+  end if;
+
+  insert into public.comments (name, comment, avatar_url)
+  values (trim(p_name), trim(p_comment), p_avatar_url)
+  returning * into v_comment;
+
+  return jsonb_build_object(
+    'allowed', true,
+    'retry_after_seconds', 120,
+    'comment', jsonb_build_object(
+      'id', v_comment.id,
+      'name', v_comment.name,
+      'comment', v_comment.comment,
+      'avatar_url', v_comment.avatar_url,
+      'created_at', v_comment.created_at
+    )
   );
+end
+$$;
+
+revoke all on function public.post_comment_with_rate_limit(text, text, text, text)
+  from public, anon, authenticated;
+grant execute on function public.post_comment_with_rate_limit(text, text, text, text)
+  to service_role;
 
 do $$
 begin

@@ -18,6 +18,7 @@ import SkeletonImage from './SkeletonImage';
 import '../style/Contact.css';
 
 const COMMENTS_STORAGE_KEY = 'portfolio-contact-comments';
+const DEFAULT_COMMENT_COOLDOWN_SECONDS = 120;
 
 const readSavedComments = () => {
   try {
@@ -51,6 +52,12 @@ const formatCommentAge = (createdAt) => {
 
   const elapsedDays = Math.floor(elapsedHours / 24);
   return `${elapsedDays} hari lalu`;
+};
+
+const formatCooldown = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 };
 
 const createProfileThumbnail = (file) => new Promise((resolve, reject) => {
@@ -100,6 +107,16 @@ export default function Contact() {
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [commentData, setCommentData] = useState({ name: '', message: '', photo: '', photoName: '' });
   const [commentError, setCommentError] = useState('');
+  const [commentCooldownSeconds, setCommentCooldownSeconds] = useState(0);
+
+  useEffect(() => {
+    if (commentCooldownSeconds <= 0) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setCommentCooldownSeconds((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [commentCooldownSeconds]);
 
   useEffect(() => {
     if (!supabase) {
@@ -202,48 +219,59 @@ export default function Contact() {
     const name = commentData.name.trim();
     const message = commentData.message.trim();
 
-    if (supabase) {
-      setIsCommentSubmitting(true);
-      const { data, error } = await supabase
-        .from('comments')
-        .insert({ name, comment: message, avatar_url: commentData.photo || null })
-        .select('id, name, comment, avatar_url, created_at')
-        .single();
+    if (!supabase) {
+      setCommentError('Layanan komentar sedang tidak tersedia.');
+      return;
+    }
 
-      setIsCommentSubmitting(false);
+    setIsCommentSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('post-comment', {
+        body: {
+          name,
+          comment: message,
+          avatar_url: commentData.photo || null,
+        },
+      });
+
       if (error) {
+        if (error.context instanceof Response && error.context.status === 429) {
+          const responseData = await error.context.clone().json();
+          const retryAfterSeconds = Math.max(
+            1,
+            Number(responseData.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
+          );
+          setCommentCooldownSeconds(retryAfterSeconds);
+          setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
+          return;
+        }
+
         console.error('Supabase comment insert failed:', error);
         setCommentError(`Supabase: ${error.message || 'Komentar gagal dikirim. Coba lagi sebentar.'}`);
         return;
       }
 
-      const savedComment = mapSupabaseComment(data);
+      if (!data?.comment) {
+        console.error('Comment function returned an invalid response:', data);
+        setCommentError('Komentar gagal dikirim. Coba lagi sebentar.');
+        return;
+      }
+
+      const savedComment = mapSupabaseComment(data.comment);
       setComments((current) => [
         savedComment,
         ...current.filter((comment) => comment.id !== savedComment.id),
       ].slice(0, 100));
+      setCommentCooldownSeconds(
+        Math.max(1, Number(data.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS),
+      );
       setCommentData({ name: '', message: '', photo: '', photoName: '' });
-      return;
+    } catch (error) {
+      console.error('Comment submission failed:', error);
+      setCommentError('Komentar gagal dikirim. Coba lagi sebentar.');
+    } finally {
+      setIsCommentSubmitting(false);
     }
-
-    const nextComments = [
-      {
-        id: `${Date.now()}`,
-        name,
-        message,
-        photo: commentData.photo,
-        createdAt: new Date().toISOString(),
-      },
-      ...comments,
-    ];
-
-    setComments(nextComments);
-    try {
-      localStorage.setItem(COMMENTS_STORAGE_KEY, JSON.stringify(nextComments));
-    } catch {
-      setCommentError('Komentar tampil, tetapi tidak dapat disimpan di browser ini.');
-    }
-    setCommentData({ name: '', message: '', photo: '', photoName: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -493,10 +521,25 @@ export default function Contact() {
                 <span className="contact-photo-hint">Ukuran file maksimal 5 MB</span>
               </div>
               {commentError && <p className="contact-comment-error" role="alert">{commentError}</p>}
-              <button type="submit" className="contact-submit-btn" disabled={isCommentSubmitting}>
+              <button
+                type="submit"
+                className="contact-submit-btn"
+                disabled={isCommentSubmitting || commentCooldownSeconds > 0}
+              >
                 <Send size={15} aria-hidden="true" />
-                <span>{isCommentSubmitting ? 'Mengirim...' : 'Kirim Komentar'}</span>
+                <span>
+                  {isCommentSubmitting
+                    ? 'Mengirim...'
+                    : commentCooldownSeconds > 0
+                      ? `Kirim lagi ${formatCooldown(commentCooldownSeconds)}`
+                      : 'Kirim Komentar'}
+                </span>
               </button>
+              {commentCooldownSeconds > 0 && (
+                <p className="contact-comment-cooldown" role="status" aria-live="polite">
+                  Kamu bisa mengirim komentar lagi dalam {formatCooldown(commentCooldownSeconds)}.
+                </p>
+              )}
             </form>
 
             <div className="contact-comments-list" aria-live="polite" aria-busy={commentsLoading}>

@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: stretch;
   overflow: hidden;
-  padding: 120px 32px 64px; /* angka pertama untuk atur margin title dng hero*/
+  padding: 70px 32px 64px; /* angka pertama untuk atur margin title dng hero*/
   margin-top: 100px;
   isolation: isolate;
 }
@@ -15,7 +15,7 @@
 .about-container-inner {
   display: grid;
   width: min(1200px, 100%);
-  min-height: min(690px, calc(100svh - 170px)); /* ankgka terakhir untuk atur margin antar title*/
+  min-height: min(690px, calc(100svh - 120px)); /* ankgka terakhir untuk atur margin antar title*/
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.92fr) minmax(0, 0.82fr);
   align-items: center;
   gap: clamp(24px, 4vw, 64px);
