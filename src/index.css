@@ -25,6 +25,13 @@
 }
 
 .skeleton-image.is-loading {
+  background: linear-gradient(
+    105deg,
+    #080d19 20%,
+    rgba(255, 255, 255, 0.82) 48%,
+    #101a2c 68%
+  );
+  background-size: 220% 100%;
   color: transparent;
 }
 

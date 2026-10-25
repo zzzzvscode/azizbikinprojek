@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import './BorderGlow.css';
+import '../style/BorderGlow.css';
 
 const GRADIENT_POSITIONS = ['80% 55%', '69% 34%', '8% 6%', '41% 38%', '86% 85%', '82% 18%', '51% 4%'];
 const GRADIENT_KEYS = [

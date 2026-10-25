@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import './SpotlightCard.css';
+import '../style/SpotlightCard.css';
 
 const THEMES = {
   dark: {
