@@ -108,6 +108,7 @@ export default function Contact() {
   const [commentData, setCommentData] = useState({ name: '', message: '', photo: '', photoName: '' });
   const [commentError, setCommentError] = useState('');
   const [commentCooldownSeconds, setCommentCooldownSeconds] = useState(0);
+  const [commentCooldownTotalSeconds, setCommentCooldownTotalSeconds] = useState(0);
 
   useEffect(() => {
     if (commentCooldownSeconds <= 0) return undefined;
@@ -241,6 +242,7 @@ export default function Contact() {
             1,
             Number(responseData.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
           );
+          setCommentCooldownTotalSeconds(retryAfterSeconds);
           setCommentCooldownSeconds(retryAfterSeconds);
           setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
           return;
@@ -262,9 +264,12 @@ export default function Contact() {
         savedComment,
         ...current.filter((comment) => comment.id !== savedComment.id),
       ].slice(0, 100));
-      setCommentCooldownSeconds(
-        Math.max(1, Number(data.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS),
+      const cooldownSeconds = Math.max(
+        1,
+        Number(data.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
       );
+      setCommentCooldownTotalSeconds(cooldownSeconds);
+      setCommentCooldownSeconds(cooldownSeconds);
       setCommentData({ name: '', message: '', photo: '', photoName: '' });
     } catch (error) {
       console.error('Comment submission failed:', error);
@@ -536,8 +541,25 @@ export default function Contact() {
                 </span>
               </button>
               {commentCooldownSeconds > 0 && (
-                <p className="contact-comment-cooldown" role="status" aria-live="polite">
-                  Kamu bisa mengirim komentar lagi dalam {formatCooldown(commentCooldownSeconds)}.
+                <div
+                  className="contact-comment-cooldown"
+                  role="progressbar"
+                  aria-label={`Waktu tunggu komentar: ${formatCooldown(commentCooldownSeconds)} tersisa`}
+                  aria-valuemin={0}
+                  aria-valuemax={commentCooldownTotalSeconds}
+                  aria-valuenow={commentCooldownSeconds}
+                >
+                  <span
+                    className="contact-comment-cooldown-progress"
+                    style={{
+                      width: `${(commentCooldownSeconds / commentCooldownTotalSeconds) * 100}%`,
+                    }}
+                  />
+                </div>
+              )}
+              {commentCooldownSeconds > 0 && (
+                <p className="contact-comment-cooldown-label" role="status" aria-live="polite">
+                  Bisa komentar lagi dalam {commentCooldownSeconds}s
                 </p>
               )}
             </form>

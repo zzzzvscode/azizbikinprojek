@@ -12,6 +12,8 @@ Currently, two official plugins are available:
 Comment submissions go through the `post-comment` Edge Function, which enforces
 a 120-second cooldown per client IP. Direct anonymous inserts into `comments`
 are disabled; public comment reads and realtime updates remain enabled.
+To change the enforced cooldown, edit `v_cooldown` in
+`supabase/comments.sql` and run that SQL again in the Supabase SQL Editor.
 
 1. Link the Supabase CLI to the project with `supabase link --project-ref <project-ref>`.
 2. Set a private HMAC key of at least 32 random bytes:

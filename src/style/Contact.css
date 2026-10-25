@@ -746,10 +746,28 @@
 }
 
 .contact-comment-cooldown {
-  margin: -8px 0 0;
-  color: #94a3b8;
+  width: calc(100% - 32px);
+  height: 5px;
+  margin: 0 auto 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.contact-comment-cooldown-progress {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #3478f6;
+  transition: width 1s linear;
+}
+
+.contact-comment-cooldown-label {
+  width: calc(100% - 32px);
+  margin: -8px 20px 0;
+  color: #a1a9b8;
   font-size: 0.82rem;
-  text-align: center;
+  text-align: right;
 }
 
 .contact-comments-list {

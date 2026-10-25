@@ -43,6 +43,7 @@ security definer
 set search_path = public, pg_temp
 as $$
 declare
+  v_cooldown interval := interval '60 seconds';
   v_next_allowed_at timestamptz;
   v_retry_after_seconds integer;
   v_comment public.comments%rowtype;
@@ -58,7 +59,7 @@ begin
   where next_allowed_at < clock_timestamp() - interval '1 day';
 
   insert into public.comment_rate_limits (ip_hash, next_allowed_at)
-  values (p_ip_hash, clock_timestamp() + interval '120 seconds')
+  values (p_ip_hash, clock_timestamp() + v_cooldown)
   on conflict (ip_hash) do update
     set next_allowed_at = excluded.next_allowed_at
     where public.comment_rate_limits.next_allowed_at <= clock_timestamp()
@@ -85,7 +86,7 @@ begin
 
   return jsonb_build_object(
     'allowed', true,
-    'retry_after_seconds', 120,
+    'retry_after_seconds', extract(epoch from v_cooldown)::integer,
     'comment', jsonb_build_object(
       'id', v_comment.id,
       'name', v_comment.name,
