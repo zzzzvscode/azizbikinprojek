@@ -1,0 +1,222 @@
+/* ========================================================
+   CLEAN ROBOT SCREEN STYLING (NO AI SLOP)
+   ======================================================== */
+
+.robot-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: #090a0d;
+  color: #ededed;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  isolation: isolate;
+  user-select: none;
+}
+
+[data-theme="light"] .robot-viewport {
+  background: #fbfbfb;
+  color: #121316;
+}
+
+/* 3D Spline Layer */
+.robot-spline-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.robot-canvas-embed {
+  width: 100%;
+  height: 100%;
+}
+
+/* Clean Header */
+.robot-clean-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 40px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: #a1a1aa;
+}
+
+[data-theme="light"] .header-brand {
+  color: #71717a;
+}
+
+.brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clean-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 19, 23, 0.6);
+  backdrop-filter: blur(12px);
+  color: #ededed;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clean-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .clean-skip-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #121316;
+}
+
+[data-theme="light"] .clean-skip-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Clean Editorial Bottom Card */
+.robot-clean-footer {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding: 0 24px;
+}
+
+.clean-hero-card {
+  width: min(92vw, 640px);
+  background: rgba(15, 17, 21, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 28px 32px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-theme="light"] .clean-hero-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+.hero-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #a1a1aa;
+  letter-spacing: 0.12em;
+}
+
+[data-theme="light"] .hero-kicker {
+  color: #71717a;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.2vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.hero-title em {
+  font-style: italic;
+  font-family: Georgia, serif;
+  color: #e4e4e7;
+}
+
+[data-theme="light"] .hero-title em {
+  color: #18181b;
+}
+
+.hero-subtext {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #a1a1aa;
+}
+
+[data-theme="light"] .hero-subtext {
+  color: #52525b;
+}
+
+.hero-button-row {
+  margin-top: 6px;
+}
+
+.clean-enter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: #ffffff;
+  color: #090a0d;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 99px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clean-enter-btn:hover {
+  transform: translateY(-2px);
+  background: #f4f4f5;
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .clean-enter-btn {
+  background: #121316;
+  color: #ffffff;
+}
+
+[data-theme="light"] .clean-enter-btn:hover {
+  background: #27272a;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 640px) {
+  .robot-clean-header {
+    padding: 20px;
+  }
+  .clean-hero-card {
+    padding: 22px 20px;
+  }
+  .robot-clean-footer {
+    bottom: 20px;
+  }
+}

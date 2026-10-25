@@ -1,0 +1,49 @@
+.lanyard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.lanyard-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  cursor: grab;
+}
+
+.lanyard-canvas:active {
+  cursor: grabbing;
+}
+
+.lanyard-card-container {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.lanyard-viewport {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.lanyard-card-container .lanyard {
+  pointer-events: auto;
+}
+
+@media (max-width: 767px) {
+  .lanyard-card-container.is-mobile {
+    position: relative;
+    inset: auto;
+    width: min(100%, 480px);
+    height: clamp(480px, 78svh, 720px);
+    flex: 0 0 auto;
+    margin: 0 auto 12px;
+  }
+}

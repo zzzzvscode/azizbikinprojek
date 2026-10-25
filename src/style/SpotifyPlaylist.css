@@ -1,0 +1,340 @@
+.spotify-section {
+  position: relative;
+  padding: 64px 24px 140px;
+}
+
+.spotify-card {
+  position: relative;
+  display: grid;
+  width: min(100%, 1200px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(24px, 3vw, 40px);
+  overflow: hidden;
+  padding: clamp(24px, 3vw, 40px);
+  margin: 0 auto;
+  border: 1px solid rgba(94, 144, 255, 0.2);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 90% 100%, rgba(44, 103, 237, 0.16), transparent 42%),
+    linear-gradient(135deg, rgba(12, 19, 38, 0.96), rgba(5, 8, 19, 0.96));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.spotify-card::before {
+  position: absolute;
+  top: -110px;
+  left: -90px;
+  width: 280px;
+  height: 280px;
+  border: 1px solid rgba(77, 132, 255, 0.1);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+}
+
+.spotify-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 20px;
+  color: #60a5fa;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.spotify-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.75);
+}
+
+.spotify-copy h2 {
+  margin: 0 0 20px;
+  /* color: #f8fafc; */
+  background: linear-gradient(105deg, #fff 8%, #8e98a8 58%, #464c57 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+.spotify-copy h2 span {
+  color: #3478ff;
+  background: linear-gradient(100deg, #3c83ff 5%, #3c83ff 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.spotify-description {
+  max-width: 390px;
+  margin: 0;
+  color: #94a3b8;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.75;
+}
+
+.spotify-open-link {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 9px;
+  margin-top: 28px;
+  padding: 0 16px;
+  border: 1px solid rgba(75, 131, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(35, 83, 177, 0.12);
+  color: #c7dcff;
+  font-size: 0.9rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.spotify-open-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(75, 131, 255, 0.65);
+  background: rgba(35, 83, 177, 0.24);
+}
+
+.spotify-player-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 19px;
+  background: rgba(3, 7, 16, 0.72);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
+}
+
+.spotify-player-skeleton {
+  position: absolute;
+  z-index: 1;
+  inset: 7px;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-content: stretch;
+  gap: 12px;
+  padding: 28px 30px 16px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #121212;
+  pointer-events: none;
+}
+
+.spotify-skeleton-header {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  align-items: flex-start;
+  gap: clamp(16px, 2vw, 30px);
+  padding-right: 24px;
+}
+
+.spotify-skeleton-cover {
+  width: clamp(112px, 29%, 185px);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  border-radius: 8px;
+}
+
+.spotify-skeleton-copy {
+  display: grid;
+  width: 100%;
+  align-content: center;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.spotify-skeleton-title {
+  width: min(72%, 190px);
+  height: 25px;
+  border-radius: 7px;
+}
+
+.spotify-skeleton-subtitle {
+  width: min(55%, 140px);
+  height: 15px;
+  border-radius: 6px;
+}
+
+.spotify-skeleton-saved {
+  width: min(64%, 160px);
+  height: 17px;
+  margin-top: 5px;
+  border-radius: 999px;
+}
+
+.spotify-skeleton-brand {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+.spotify-skeleton-preview-label {
+  width: 54px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+.spotify-skeleton-tracks {
+  display: grid;
+  gap: 12px;
+}
+
+.spotify-skeleton-track {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  padding: 1px 4px;
+}
+
+.spotify-skeleton-track-number {
+  width: 10px;
+  height: 12px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+}
+
+.spotify-skeleton-track-copy {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 6px;
+}
+
+.spotify-skeleton-track-title {
+  width: min(48%, 190px);
+  height: 13px;
+  border-radius: 5px;
+}
+
+.spotify-skeleton-track-artist {
+  width: min(30%, 120px);
+  height: 10px;
+  border-radius: 5px;
+}
+
+.spotify-skeleton-track-duration {
+  width: 34px;
+  height: 12px;
+  flex: 0 0 auto;
+  border-radius: 5px;
+}
+
+.spotify-embed {
+  display: block;
+  width: 100%;
+  height: 352px;
+  border: 0;
+  border-radius: 12px;
+}
+
+@media (max-width: 760px) {
+  .spotify-section {
+    padding: 48px 20px 64px;
+  }
+
+  .spotify-card {
+    max-width: 520px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: clamp(22px, 5vw, 32px);
+  }
+
+  .spotify-copy h2 {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+  }
+
+  .spotify-player-skeleton {
+    grid-template-rows: 144px auto 1fr;
+    gap: 10px;
+    padding: 14px 15px 12px;
+    border-radius: 10px;
+  }
+
+  .spotify-skeleton-header {
+    gap: 13px;
+    padding-right: 20px;
+  }
+
+  .spotify-skeleton-cover {
+    width: clamp(82px, 29vw, 105px);
+  }
+
+  .spotify-skeleton-copy {
+    gap: 8px;
+    padding-top: 13px;
+  }
+
+  .spotify-skeleton-title {
+    height: 18px;
+  }
+
+  .spotify-skeleton-subtitle {
+    height: 12px;
+  }
+
+  .spotify-skeleton-saved {
+    width: 72%;
+    height: 13px;
+    margin-top: 1px;
+  }
+
+  .spotify-skeleton-brand {
+    width: 20px;
+    height: 20px;
+  }
+
+  .spotify-skeleton-preview-label {
+    width: 48px;
+    height: 15px;
+  }
+
+  .spotify-skeleton-tracks {
+    align-content: start;
+    gap: 12px;
+    padding-top: 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .spotify-skeleton-track {
+    gap: 11px;
+    padding: 0 4px;
+  }
+
+  .spotify-skeleton-track-title {
+    width: min(75%, 190px);
+  }
+
+  .spotify-skeleton-track-artist {
+    width: min(48%, 120px);
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-section {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .spotify-card {
+    border-radius: 22px;
+  }
+
+  .spotify-player-skeleton {
+    gap: 12px;
+    padding: 16px;
+  }
+
+}

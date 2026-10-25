@@ -1,0 +1,94 @@
+/* ========================================================
+   CLEAN THREE HERO MESH STYLES
+   ======================================================== */
+
+.three-hero-clean-frame {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease;
+}
+
+[data-theme="light"] .three-hero-clean-frame {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.three-hero-clean-frame:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="light"] .three-hero-clean-frame:hover {
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+.three-hero-canvas-mount {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.three-hero-canvas-mount:active {
+  cursor: grabbing;
+}
+
+.three-hero-clean-controls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: auto;
+}
+
+.clean-pill-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: rgba(20, 22, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.clean-pill-btn:hover,
+.clean-pill-btn.active {
+  background: #ffffff;
+  color: #090a0d;
+  border-color: #ffffff;
+}
+
+[data-theme="light"] .clean-pill-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #52525b;
+}
+
+[data-theme="light"] .clean-pill-btn:hover,
+[data-theme="light"] .clean-pill-btn.active {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}
+
+.three-hero-hint {
+  position: absolute;
+  bottom: 14px;
+  font-size: 0.68rem;
+  color: #71717a;
+  font-family: 'JetBrains Mono', monospace;
+  pointer-events: none;
+}
