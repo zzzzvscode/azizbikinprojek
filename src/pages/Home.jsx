@@ -16,6 +16,7 @@ export default function Home({ onOpenProject }) {
   const [introFinished, setIntroFinished] = useState(
     () => sessionStorage.getItem('portfolio-intro-finished') === 'true',
   );
+  const [lanyardIntroStarted, setLanyardIntroStarted] = useState(introFinished);
   usePortfolioAnimations(homeRef, introFinished);
 
   const finishIntro = () => {
@@ -32,12 +33,17 @@ export default function Home({ onOpenProject }) {
       </div>
       {introFinished && <ParticleBackground />}
       <div className="home-ui-scale">
-        {!introFinished && <WelcomeScreen onComplete={finishIntro} />}
+        {!introFinished && (
+          <WelcomeScreen
+            onComplete={finishIntro}
+            onExitAnimationStart={() => setLanyardIntroStarted(true)}
+          />
+        )}
 
         <Navbar />
 
         <main>
-          <Hero introFinished={introFinished} />
+          <Hero lanyardIntroStarted={lanyardIntroStarted} />
           <About />
           <ExperienceEducation />
           <SpotifyPlaylist />

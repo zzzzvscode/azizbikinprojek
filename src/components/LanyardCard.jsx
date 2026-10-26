@@ -5,7 +5,7 @@ import backCardImg from '../assets/lanyard/backCard.png';
 import bandImg from '../assets/lanyard/bandd.png';
 import '../style/Lanyard.css';
 
-export default function LanyardCard() {
+export default function LanyardCard({ introFinished }) {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
   );
@@ -42,6 +42,7 @@ export default function LanyardCard() {
           interactive={true}
           autoFlip={false}
           metal="silver"
+          intro={introFinished}
         />
       </div>
     </section>

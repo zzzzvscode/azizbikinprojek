@@ -11,7 +11,7 @@ const ROLES = [
   'Web Development',
 ];
 
-export default function Hero({ introFinished }) {
+export default function Hero({ lanyardIntroStarted }) {
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [roleIndex, setRoleIndex] = useState(0);
@@ -69,7 +69,7 @@ export default function Hero({ introFinished }) {
 
   return (
     <section className="hero-root-section" id="Home">
-      {introFinished && <LanyardCard />}
+      <LanyardCard introFinished={lanyardIntroStarted} />
       <div className="hero-container-inner">
         {/* Left Column: Narrative, Typography & CTAs */}
         <div className="hero-text-col">
