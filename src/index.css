@@ -15,30 +15,32 @@
 
 .skeleton-block,
 .skeleton-image.is-loading {
-  background: linear-gradient(
-    105deg,
-    rgba(63, 78, 105, 0.32) 20%,
-    rgba(105, 135, 183, 0.4) 38%,
-    rgba(63, 78, 105, 0.32) 56%
+  background-color: rgba(148, 163, 184, 0.12);
+  background-image: linear-gradient(
+    100deg,
+    transparent 25%,
+    rgba(191, 211, 239, 0.2) 48%,
+    transparent 72%
   );
-  background-size: 220% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  background-position: 100% 0;
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
 }
 
 .skeleton-image.is-loading {
-  background: linear-gradient(
-    105deg,
-    #080d19 20%,
-    rgba(255, 255, 255, 0.82) 48%,
-    #101a2c 68%
+  background-color: #0c1423;
+  background-image: linear-gradient(
+    100deg,
+    #0c1423 25%,
+    rgba(148, 163, 184, 0.26) 48%,
+    #0c1423 72%
   );
-  background-size: 220% 100%;
   color: transparent;
 }
 
 @keyframes skeleton-shimmer {
   to {
-    background-position-x: -220%;
+    background-position-x: -100%;
   }
 }
 
