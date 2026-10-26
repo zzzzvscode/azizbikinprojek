@@ -77,6 +77,28 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
         const section = scope.querySelector(sectionSelector);
         if (section) createSectionReveal(section, titleSelector, contentSelector);
       });
+
+      if (window.matchMedia('(max-width: 900px)').matches) {
+        const commentsPanel = scope.querySelector('.contact-comments-panel');
+        if (commentsPanel) {
+          gsap.fromTo(
+            commentsPanel,
+            { autoAlpha: 0, y: 24, filter: 'blur(6px)' },
+            {
+              autoAlpha: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 0.7,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: commentsPanel,
+                start: 'top 85%',
+                toggleActions: 'play none none reverse',
+              },
+            },
+          );
+        }
+      }
     }, scope);
 
     ScrollTrigger.refresh();

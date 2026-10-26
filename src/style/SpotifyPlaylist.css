@@ -10,7 +10,7 @@
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
   gap: clamp(24px, 3vw, 40px);
-  overflow: hidden;
+  overflow: visible;
   padding: clamp(24px, 3vw, 40px);
   margin: 0 auto;
   border: 1px solid rgba(94, 144, 255, 0.2);
@@ -52,7 +52,12 @@
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.75);
 }
 
+.spotify-copy {
+  min-width: 0;
+}
+
 .spotify-copy h2 {
+  max-width: 100%;
   margin: 0 0 20px;
   /* color: #f8fafc; */
   background: linear-gradient(105deg, #fff 8%, #8e98a8 58%, #464c57 100%);
@@ -62,6 +67,8 @@
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 1.05;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .spotify-copy h2 span {
@@ -106,6 +113,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
+  min-width: 0;
   padding: 7px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 19px;
@@ -250,9 +258,16 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding: clamp(22px, 5vw, 32px);
+    overflow: visible;
+  }
+
+  .spotify-copy {
+    width: 100%;
+    min-width: 0;
   }
 
   .spotify-copy h2 {
+    max-width: 100%;
     font-size: clamp(2rem, 8vw, 2.8rem);
   }
 
