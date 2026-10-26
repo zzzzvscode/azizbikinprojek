@@ -70,7 +70,7 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
           '.section-display-title',
           '.portfolio-tab-bar, .portfolio-projects-view, .portfolio-skills-view, .portfolio-certificates-view, .portfolio-awards-view',
         ],
-        ['.contact-root-section', '.section-display-title', '.contact-panel, .contact-comments-panel'],
+        ['.contact-root-section', '.section-display-title', '.contact-panel'],
       ];
 
       sectionReveals.forEach(([sectionSelector, titleSelector, contentSelector]) => {
@@ -78,26 +78,24 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
         if (section) createSectionReveal(section, titleSelector, contentSelector);
       });
 
-      if (window.matchMedia('(max-width: 900px)').matches) {
-        const commentsPanel = scope.querySelector('.contact-comments-panel');
-        if (commentsPanel) {
-          gsap.fromTo(
-            commentsPanel,
-            { autoAlpha: 0, y: 24, filter: 'blur(6px)' },
-            {
-              autoAlpha: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              duration: 0.7,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: commentsPanel,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
-              },
+      const commentsPanel = scope.querySelector('.contact-comments-panel');
+      if (commentsPanel) {
+        gsap.fromTo(
+          commentsPanel,
+          { autoAlpha: 0, y: 24, filter: 'blur(6px)' },
+          {
+            autoAlpha: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.65,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: commentsPanel,
+              start: `top bottom-=${SECTION_REVEAL_OFFSET + SECTION_CONTENT_REVEAL_DELAY}`,
+              toggleActions: 'play none none reverse',
             },
-          );
-        }
+          },
+        );
       }
     }, scope);
 
