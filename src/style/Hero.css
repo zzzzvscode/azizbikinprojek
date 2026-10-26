@@ -251,7 +251,7 @@
     justify-content: flex-start;
     gap: 0;
     padding: 0 18px 48px;
-    margin-bottom: 24px;
+    margin-bottom: 40px;
   }
 
   .hero-container-inner {
@@ -283,7 +283,21 @@
     text-align: center;
   }
 
-  .hero-action-row,
+  .hero-action-row {
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
   .hero-find-me-wrap {
     justify-content: center;
   }
