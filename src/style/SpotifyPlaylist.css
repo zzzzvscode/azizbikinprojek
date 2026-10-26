@@ -271,6 +271,11 @@
     font-size: clamp(2rem, 8vw, 2.8rem);
   }
 
+  .spotify-embed {
+    width: 90%;
+    margin-inline: auto;
+  }
+
   .spotify-player-skeleton {
     grid-template-rows: 144px auto 1fr;
     gap: 10px;

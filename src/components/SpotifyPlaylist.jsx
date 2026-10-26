@@ -57,7 +57,6 @@ export default function SpotifyPlaylist() {
             className="spotify-embed"
             title="Spotify playlist: Daily Rotation"
             src="https://open.spotify.com/embed/playlist/3XXwLc91K6JYhtotQO98S4?utm_source=generator&theme=0&si=8159cd1856464587"
-            width="90%"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
             loading="lazy"
