@@ -272,8 +272,9 @@
   }
 
   .spotify-embed {
-    width: 90%;
-    margin-inline: auto;
+    width: 111.111%;
+    height: 391px;
+    zoom: 0.9;
   }
 
   .spotify-player-skeleton {
