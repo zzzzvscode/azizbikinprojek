@@ -6,7 +6,7 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: transparent;
+  background: #000;
   opacity: 1;
   transition: transform 700ms cubic-bezier(0.83, 0, 0.17, 1), visibility 700ms;
 }
