@@ -105,6 +105,8 @@ body,
 .home-page-container {
   position: relative;
   isolation: isolate;
+  min-height: 100vh;
+  background-color: #02050b;
 }
 
 .gsap-ambient {
