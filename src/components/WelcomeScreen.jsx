@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import ParticleBackground from './ParticleBackground';
 import '../style/Splash.css';
 
 const MIN_LOADING_DURATION = 3000;
@@ -151,7 +150,6 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
 
   return (
     <div className={`welcome-screen-root${isLeaving ? ' is-leaving' : ''}`}>
-      <ParticleBackground />
       <div className="welcome-loader">
         <span
           className="welcome-loader-number"

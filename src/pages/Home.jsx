@@ -31,7 +31,7 @@ export default function Home({ onOpenProject }) {
         <span className="gsap-ambient-orb gsap-ambient-orb-two" />
         <span className="gsap-ambient-orb gsap-ambient-orb-three" />
       </div>
-      {introFinished && <ParticleBackground />}
+      <ParticleBackground />
       <div className="home-ui-scale">
         {!introFinished && (
           <WelcomeScreen
