@@ -19,27 +19,17 @@
 }
 
 .navbar-container {
-  position: relative;
-  width: fit-content;
+  --navbar-width: fit-content;
+  width: var(--navbar-width);
   max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-top: 20px;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 34px rgba(0, 0, 0, 0.18);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar-scrolled .navbar-container {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 12px 34px rgba(0, 0, 0, 0.22);
+.navbar-container .glass-surface__content {
+  width: auto;
+  height: auto;
+  gap: 8px;
+  padding: 8px 12px;
 }
 
 /* Brand Logo */
@@ -212,6 +202,10 @@
   }
 
   .navbar-container {
+    --navbar-width: 100%;
+  }
+
+  .navbar-container .glass-surface__content {
     width: 100%;
     justify-content: flex-end;
     padding: 7px 10px;
@@ -253,17 +247,26 @@
   top: 72px;
   left: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   max-height: 0;
-  opacity: 0;
   visibility: hidden;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.35s;
+}
+
+.navbar-mobile-glass {
+  width: 100%;
+  height: auto;
+}
+
+.navbar-mobile-glass .glass-surface__content {
+  width: 100%;
+  height: auto;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
 }
 
 @media (min-width: 768px) {
@@ -274,8 +277,10 @@
 
 .navbar-mobile-menu.is-open {
   max-height: 380px;
-  opacity: 1;
   visibility: visible;
+  transition:
+    max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
 }
 
 .navbar-mobile-inner {
@@ -331,4 +336,35 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
+}
+
+@media (max-width: 767px) {
+  .navbar-container.glass-surface--fallback,
+  .navbar-mobile-glass.glass-surface--fallback {
+    border: 1px solid rgba(220, 235, 255, 0.42);
+    background: linear-gradient(
+      135deg,
+      rgba(176, 205, 255, 0.26),
+      rgba(35, 51, 78, 0.2) 48%,
+      rgba(145, 177, 225, 0.16)
+    );
+    -webkit-backdrop-filter: blur(6px) saturate(1.35) brightness(1.06);
+    backdrop-filter: blur(6px) saturate(1.35) brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.58),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 0 18px rgba(198, 220, 255, 0.12),
+      0 8px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .navbar-container.glass-surface--fallback .glass-surface__sheen,
+  .navbar-mobile-glass.glass-surface--fallback .glass-surface__sheen {
+    background: linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0.32),
+      transparent 38%,
+      transparent 66%,
+      rgba(170, 205, 255, 0.18)
+    );
+  }
 }

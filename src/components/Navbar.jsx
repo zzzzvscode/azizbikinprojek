@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { Menu, X, Volume2, VolumeX, Send } from 'lucide-react';
 import { useSound } from '../context/SoundContext';
+import GlassSurface from './GlassSurface';
 import '../style/Navbar.css';
 
 export default function Navbar() {
@@ -83,7 +84,18 @@ export default function Navbar() {
 
   return (
     <header className={`navbar-root ${scrolled ? 'navbar-scrolled' : ''}`}>
-      <div className="navbar-container">
+      <GlassSurface
+        className="navbar-container"
+        width="var(--navbar-width)"
+        height="auto"
+        borderRadius={999}
+        blur={14}
+        distortionScale={-70}
+        displace={0.25}
+        greenOffset={4}
+        blueOffset={8}
+        backgroundOpacity={scrolled ? 0.12 : 0.08}
+      >
         {/* Desktop Nav Items */}
         <nav className="navbar-links">
           {navLinks.map((link) => {
@@ -130,37 +142,50 @@ export default function Navbar() {
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-      </div>
+      </GlassSurface>
 
       {/* Mobile Drawer Menu */}
       <div className={`navbar-mobile-menu ${mobileOpen ? 'is-open' : ''}`}>
-        <div className="navbar-mobile-inner">
-          {navLinks.map((link) => {
-            const isActive = activeSection === (link.section || link.name);
-            return (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => scrollTo(e, link.href)}
-                className={`navbar-mobile-link ${isActive ? 'is-active' : ''}`}
-              >
-                <span>{link.name}</span>
-                {isActive && <span className="navbar-mobile-indicator" />}
-              </a>
-            );
-          })}
+        <GlassSurface
+          className="navbar-mobile-glass"
+          width="100%"
+          height="auto"
+          borderRadius={20}
+          blur={14}
+          distortionScale={-70}
+          displace={0.25}
+          greenOffset={4}
+          blueOffset={8}
+          backgroundOpacity={0.08}
+        >
+          <div className="navbar-mobile-inner">
+            {navLinks.map((link) => {
+              const isActive = activeSection === (link.section || link.name);
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => scrollTo(e, link.href)}
+                  className={`navbar-mobile-link ${isActive ? 'is-active' : ''}`}
+                >
+                  <span>{link.name}</span>
+                  {isActive && <span className="navbar-mobile-indicator" />}
+                </a>
+              );
+            })}
 
-          <div className="navbar-mobile-footer">
-            <a
-              href="#Contact"
-              onClick={(e) => scrollTo(e, '#Contact')}
-              className="navbar-mobile-cta"
-            >
-              <span>Hubungi Saya</span>
-              <Send size={14} />
-            </a>
+            <div className="navbar-mobile-footer">
+              <a
+                href="#Contact"
+                onClick={(e) => scrollTo(e, '#Contact')}
+                className="navbar-mobile-cta"
+              >
+                <span>Hubungi Saya</span>
+                <Send size={14} />
+              </a>
+            </div>
           </div>
-        </div>
+        </GlassSurface>
       </div>
     </header>
   );
