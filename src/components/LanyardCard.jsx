@@ -31,7 +31,7 @@ export default function LanyardCard() {
           finish="glossy"
           anchor={isMobile ? 'center' : 'right'}
           orientation="portrait"
-          size={isMobile ? 0.72 : 0.56}
+          size={isMobile ? 0.62 : 0.56}
           cornerRadius={0.25}
           strapLength={0.59}
           strapWidth={0.62}
