@@ -8,13 +8,17 @@ const LANYARD_ASSETS = [
   { label: 'Tali kartu', url: bandImage },
 ];
 
+const IMAGE_LOAD_TIMEOUT = 15000;
+
 const preloadImage = ({ label, url }, signal) => new Promise((resolve) => {
   const image = new Image();
   let settled = false;
+  let timeoutId;
 
   const finish = (error = null) => {
     if (settled) return;
     settled = true;
+    window.clearTimeout(timeoutId);
     signal.removeEventListener('abort', onAbort);
     if (error) resolve({ error, label });
     else resolve({ label });
@@ -30,7 +34,8 @@ const preloadImage = ({ label, url }, signal) => new Promise((resolve) => {
       await image.decode?.();
       finish();
     } catch (error) {
-      finish(error);
+      if (image.naturalWidth > 0) finish();
+      else finish(error);
     }
   };
   image.onerror = () => finish(new Error(`Gagal memuat ${label}`));
@@ -41,6 +46,10 @@ const preloadImage = ({ label, url }, signal) => new Promise((resolve) => {
   }
 
   signal.addEventListener('abort', onAbort, { once: true });
+  timeoutId = window.setTimeout(
+    () => finish(new Error(`Waktu memuat ${label} habis`)),
+    IMAGE_LOAD_TIMEOUT,
+  );
   image.src = url;
 });
 

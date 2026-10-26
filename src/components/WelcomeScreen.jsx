@@ -117,16 +117,23 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
         total: result.total,
         failures: result.failures,
       });
-      if (result.failures.length === 0) {
-        setLoadingPercent(100);
-        finishIntro();
+      setLoadingPercent(100);
+      if (result.failures.length > 0) {
+        console.warn(
+          'Sebagian aset lanyard gagal dimuat; halaman tetap dilanjutkan.',
+          result.failures,
+        );
       }
+      finishIntro();
     }).catch((error) => {
       if (controller.signal.aborted) return;
+      console.error('Gagal memeriksa aset lanyard:', error);
       setProgress((current) => ({
         ...current,
         failures: [...current.failures, { label: 'portfolio assets', error }],
       }));
+      setLoadingPercent(100);
+      finishIntro();
     });
 
     return () => {
