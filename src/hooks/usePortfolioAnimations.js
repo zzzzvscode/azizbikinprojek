@@ -71,11 +71,6 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
           '.portfolio-tab-bar, .portfolio-projects-view, .portfolio-skills-view, .portfolio-certificates-view, .portfolio-awards-view',
         ],
         ['.contact-root-section', '.section-display-title', '.contact-panel, .contact-comments-panel'],
-        [
-          '.footer-root',
-          '.footer-logo, .footer-col-heading',
-          '.footer-tagline, .footer-links-list, .footer-social-row, .footer-bottom-row',
-        ],
       ];
 
       sectionReveals.forEach(([sectionSelector, titleSelector, contentSelector]) => {
