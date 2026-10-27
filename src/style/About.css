@@ -190,15 +190,15 @@
 }
 
 @keyframes mobile-spider-blink {
-  0%, 55%, 100% {
+  0%, 45%, 100% {
     opacity: 0;
   }
 
-  62% {
+  50% {
     opacity: 0.3;
   }
 
-  70%, 82% {
+  55%, 88% {
     opacity: 0.92;
   }
 }
@@ -332,6 +332,10 @@
     grid-column: 1;
     grid-row: 2;
     justify-self: center;
+  }
+
+  .about-portrait-glow {
+    filter: none;
   }
 
   .about-portrait-stage.is-in-view:not(.spider-hovered):not([data-spider-visible='true']) .about-spider-image {

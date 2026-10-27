@@ -159,3 +159,32 @@
   border-color: rgba(44, 103, 237, 0.35);
   color: #ffffff;
 }
+
+@media (max-width: 767px) {
+  .footer-root {
+    padding: 24px 18px;
+  }
+
+  .footer-top-row {
+    margin-bottom: 18px;
+  }
+
+  .footer-tagline,
+  .footer-nav-col {
+    display: none;
+  }
+
+  .footer-logo {
+    margin-bottom: 0;
+  }
+
+  .footer-bottom-row {
+    flex-direction: row;
+    gap: 12px;
+    padding-top: 16px;
+  }
+
+  .footer-back-to-top {
+    display: none;
+  }
+}

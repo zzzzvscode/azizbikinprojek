@@ -34,7 +34,8 @@ export default function LanyardCard({ introFinished }) {
             finish="glossy"
             anchor={isMobile ? 'center' : 'right'}
             orientation="portrait"
-            size={isMobile ? 0.62 : 0.56}
+            size={0.62}
+            // size={isMobile ? 0.62 : 0.56} mobile kiri, desktop kanan
             cornerRadius={0.25}
             strapLength={0.59}
             strapWidth={0.62}
@@ -43,7 +44,7 @@ export default function LanyardCard({ introFinished }) {
             elasticity={0.7}
             breeze={0.1}
             interactive={true}
-            autoFlip={false}
+            autoFlip={true}
             metal="silver"
             intro={introFinished}
           />

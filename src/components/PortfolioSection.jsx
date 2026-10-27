@@ -173,16 +173,22 @@ export default function PortfolioSection({ onOpenProject }) {
         : '.portfolio-cert-card';
     const items = view?.querySelectorAll(itemSelector);
     if (!items?.length) return undefined;
+    const animateBlur = !window.matchMedia('(max-width: 767px)').matches;
 
     const context = gsap.context(() => {
       gsap.fromTo(
         items,
-        { autoAlpha: 0, y: 28, scale: 0.94, filter: 'blur(5px)' },
+        {
+          autoAlpha: 0,
+          y: 28,
+          scale: 0.94,
+          ...(animateBlur ? { filter: 'blur(5px)' } : {}),
+        },
         {
           autoAlpha: 1,
           y: 0,
           scale: 1,
-          filter: 'blur(0px)',
+          ...(animateBlur ? { filter: 'blur(0px)' } : {}),
           duration: 0.52,
           stagger: { each: 0.065, from: 'start' },
           ease: 'power3.out',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, Terminal, Heart } from 'lucide-react';
+import { ArrowUp, Terminal } from 'lucide-react';
 import { GithubIcon, InstagramIcon, TikTokIcon } from './BrandIcons';
 import '../style/Footer.css';
 
