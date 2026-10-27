@@ -28,12 +28,17 @@ import cssLogo from '../assets/TECH/css-svgrepo-com.svg';
 
 import udemy01Sertif from '../assets/SERTIFIKAT/UC-f106f323-2cad-4f16-a2d3-e0e843fb2016-1.png';
 import pklSertif from '../assets/SERTIFIKAT/pkl.png'
+import mobilePklSertif from '../assets/SERTIFIKAT/pkl-mobile.webp';
 import cssjsCourse from '../assets/SERTIFIKAT/css-js-course.jpg'
 import ksmSertif from '../assets/SERTIFIKAT/ksm.png'
+import mobileKsmSertif from '../assets/SERTIFIKAT/ksm-mobile.webp';
 
 import cyberGyzn from  '../assets/Project/cyberGyzn.png';
+import mobileCyberGyzn from '../assets/Project/cyberGyzn-mobile.webp';
 import botArtikel from '../assets/Project/botArtikel.png'
+import mobileBotArtikel from '../assets/Project/botArtikel-mobile.webp';
 import dataSiswa from '../assets/Project/dataSiswa.png'
+import mobileDataSiswa from '../assets/Project/dataSiswa-mobile.webp';
 
 import SkeletonImage from './SkeletonImage';
 import BorderGlow from './BorderGlow';
@@ -48,6 +53,7 @@ export const PROJECTS_DATA = [
     categoryLabel: 'Phising',
     gradient: 'linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #0284c7 100%)',
     image: cyberGyzn,
+    mobileImage: mobileCyberGyzn,
     description:
       'Aplikasi dashboard hasil link phising untuk memantau dan menganalisis data phishing.',
     longDesc:
@@ -60,6 +66,7 @@ export const PROJECTS_DATA = [
     category: 'bot',
     categoryLabel: 'automatisasi',
     image: botArtikel,
+    mobileImage: mobileBotArtikel,
     gradient: 'linear-gradient(135deg, #091e3a 0%, #1e3a8a 50%, #3b82f6 100%)',
     description:
       'Aplikasi dashboard otomatisasi pembuatan artikel berbasis AI untuk menghasilkan, mengelola, dan memantau proses pembuatan serta publikasi artikel secara efisien pada website.',
@@ -73,6 +80,7 @@ export const PROJECTS_DATA = [
     category: 'db',
     categoryLabel: 'db',
     image: dataSiswa,
+    mobileImage: mobileDataSiswa,
     gradient: 'linear-gradient(135deg, #091e3a 0%, #1e3a8a 50%, #3b82f6 100%)',
     description:
       'Aplikasi Dashboard Data Siswa merupakan platform berbasis website untuk memantau data siswa secara terpusat.',
@@ -120,6 +128,7 @@ const CERTIFICATES_DATA = [
     id: 'pkl',
     title: 'Sertifikat',
     image: pklSertif,
+    mobileImage: mobilePklSertif,
   },
   {
     id: 'udemy',
@@ -140,6 +149,7 @@ const AWARDS_DATA = [
     event: 'Kompetisi Sains Madrasah Tingkat Kota Jayapura',
     year: '2022',
     image: ksmSertif,
+    mobileImage: mobileKsmSertif,
   },
 ];
 
@@ -275,6 +285,7 @@ export default function PortfolioSection({ onOpenProject }) {
                         <SkeletonImage
                           className="portfolio-card-thumbnail-image"
                           src={proj.image}
+                          mobileSrc={proj.mobileImage}
                           alt={`Thumbnail ${proj.title}`}
                           loading="lazy"
                         />
@@ -365,6 +376,7 @@ export default function PortfolioSection({ onOpenProject }) {
                     <SkeletonImage
                       className="portfolio-cert-preview-image"
                       src={cert.image}
+                      mobileSrc={cert.mobileImage}
                       alt={`Preview ${cert.title}`}
                       loading="lazy"
                     />
@@ -402,6 +414,7 @@ export default function PortfolioSection({ onOpenProject }) {
                     <SkeletonImage
                       className="portfolio-cert-preview-image"
                       src={award.image}
+                      mobileSrc={award.mobileImage}
                       alt={`Piagam ${award.title}`}
                       loading="lazy"
                     />
@@ -442,6 +455,7 @@ export default function PortfolioSection({ onOpenProject }) {
               <SkeletonImage
                 className="portfolio-cert-viewer-image"
                 src={selectedCertificate.image}
+                mobileSrc={selectedCertificate.mobileImage}
                 alt={selectedCertificate.title}
               />
             </div>

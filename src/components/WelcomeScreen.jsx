@@ -105,7 +105,11 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
 
     import('../utils/preloadPortfolioAssets').then(({ preloadLanyardAssets }) => (
       Promise.all([
-        preloadLanyardAssets(setProgress, controller.signal),
+        preloadLanyardAssets(
+          setProgress,
+          controller.signal,
+          window.matchMedia('(max-width: 767px)').matches,
+        ),
         minimumLoadingTime,
       ]).then(([result]) => result)
     )).then((result) => {

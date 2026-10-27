@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ArrowUpRight, Code2, FileText } from 'lucide-react';
 import portrait from '../assets/orangAbout/me2.png';
 import spiderSuit from '../assets/orangAbout/PhotoSpiderman.png';
+import mobileSpiderSuit from '../assets/orangAbout/PhotoSpiderman-mobile.webp';
 import SkeletonImage from './SkeletonImage';
 import '../style/About.css';
 
@@ -85,7 +86,13 @@ export default function About() {
           <div className="about-portrait-glow" />
           <div className="about-portrait">
             <SkeletonImage className="about-person-image" src={portrait} alt="Muhammad Al-Fari Yusuf" />
-            <SkeletonImage className="about-spider-image" src={spiderSuit} alt="" aria-hidden="true" />
+            <SkeletonImage
+              className="about-spider-image"
+              src={spiderSuit}
+              mobileSrc={mobileSpiderSuit}
+              alt=""
+              aria-hidden="true"
+            />
           </div>
           <span className="about-portrait-orbit about-portrait-orbit-one" />
           <span className="about-portrait-orbit about-portrait-orbit-two" />

@@ -114,7 +114,11 @@ export default function ProjectDetailPage({ project, onBack }) {
               colors={['#38bdf8', '#6366f1', '#c084fc']}
             >
               <div className="project-detail-preview has-image" style={{ background: project.gradient }}>
-                <SkeletonImage src={project.image} alt={`Tampilan ${project.title}`} />
+                <SkeletonImage
+                  src={project.image}
+                  mobileSrc={project.mobileImage}
+                  alt={`Tampilan ${project.title}`}
+                />
               </div>
             </BorderGlow>
           ) : (

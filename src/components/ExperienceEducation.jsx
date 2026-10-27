@@ -2,8 +2,11 @@ import React from 'react';
 import { Award, Code2, Trophy } from 'lucide-react';
 import LiquidMetalBorder from './LiquidMetalBorder';
 import texmacoLogo from '../assets/LOGO/texmaco.png';
+import mobileTexmacoLogo from '../assets/LOGO/texmaco-mobile.webp';
 import mtsLogo from '../assets/LOGO/masamujaya.png';
+import mobileMtsLogo from '../assets/LOGO/masamujaya-mobile.webp';
 import stekomLogo from '../assets/LOGO/stekom.png';
+import mobileStekomLogo from '../assets/LOGO/stekom-mobile.webp';
 import SkeletonImage from './SkeletonImage';
 import '../style/ExperienceEducation.css';
 
@@ -22,7 +25,7 @@ export default function ExperienceEducation() {
             <h2>Education</h2>
             <article className="experience-card">
               <div className="experience-logo">
-                <SkeletonImage src={texmacoLogo} alt="Logo SMK Texmaco Semarang" />
+                <SkeletonImage src={texmacoLogo} mobileSrc={mobileTexmacoLogo} alt="Logo SMK Texmaco Semarang" />
               </div>
               <div className="experience-card-copy">
                 <h3>SMK Texmaco Semarang</h3>
@@ -32,7 +35,7 @@ export default function ExperienceEducation() {
             </article>
             <article className="experience-card">
               <div className="experience-logo">
-                <SkeletonImage src={mtsLogo} alt="Logo MTs Muhammadiyah Jayapura" />
+                <SkeletonImage src={mtsLogo} mobileSrc={mobileMtsLogo} alt="Logo MTs Muhammadiyah Jayapura" />
               </div>
               <div className="experience-card-copy">
                 <h3>MTs Muhammadiyah Jayapura</h3>
@@ -46,7 +49,7 @@ export default function ExperienceEducation() {
             <h2>Experience</h2>
             <article className="experience-card">
               <div className="experience-logo">
-                <SkeletonImage src={stekomLogo} alt="Logo Universitas STEKOM" />
+                <SkeletonImage src={stekomLogo} mobileSrc={mobileStekomLogo} alt="Logo Universitas STEKOM" />
               </div>
               <div className="experience-card-copy">
                 <h3>Universitas STEKOM</h3>

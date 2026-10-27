@@ -1,10 +1,17 @@
 import backCardImage from '../assets/lanyard/backCard.png';
+import mobileBackCardImage from '../assets/lanyard/backCard-mobile.webp';
 import bandImage from '../assets/lanyard/bandd.png';
 import frontCardImage from '../assets/lanyard/frontCard.png';
+import mobileFrontCardImage from '../assets/lanyard/frontCard-mobile.webp';
 
-const LANYARD_ASSETS = [
+const DESKTOP_LANYARD_ASSETS = [
   { label: 'Kartu depan', url: frontCardImage },
   { label: 'Kartu belakang', url: backCardImage },
+  { label: 'Tali kartu', url: bandImage },
+];
+const MOBILE_LANYARD_ASSETS = [
+  { label: 'Kartu depan', url: mobileFrontCardImage },
+  { label: 'Kartu belakang', url: mobileBackCardImage },
   { label: 'Tali kartu', url: bandImage },
 ];
 
@@ -53,12 +60,20 @@ const preloadImage = ({ label, url }, signal) => new Promise((resolve) => {
   image.src = url;
 });
 
-export async function preloadLanyardAssets(onProgress, signal) {
+export async function preloadLanyardAssets(onProgress, signal, isMobile = false) {
   let completed = 0;
   let loaded = 0;
   const failures = [];
+  const assets = isMobile ? MOBILE_LANYARD_ASSETS : DESKTOP_LANYARD_ASSETS;
 
-  await Promise.all(LANYARD_ASSETS.map(async (asset) => {
+  onProgress({
+    completed,
+    loaded,
+    total: assets.length,
+    failures: [...failures],
+  });
+
+  await Promise.all(assets.map(async (asset) => {
     const result = await preloadImage(asset, signal);
     if (signal.aborted) return;
 
@@ -69,10 +84,10 @@ export async function preloadLanyardAssets(onProgress, signal) {
     onProgress({
       completed,
       loaded,
-      total: LANYARD_ASSETS.length,
+      total: assets.length,
       failures: [...failures],
     });
   }));
 
-  return { failures, loaded, total: LANYARD_ASSETS.length };
+  return { failures, loaded, total: assets.length };
 }
