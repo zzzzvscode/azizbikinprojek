@@ -76,7 +76,7 @@ export default function Hero({ lanyardIntroStarted }) {
 
           {/* Heading */}
           <div className="hero-heading-group">
-            <h1 className="hero-h1-gradient">Walcome to</h1>
+            <h1 className="hero-h1-gradient">Welcome to</h1>
             <h1 className="hero-h1-white">My Portfolio</h1>
           </div>
 
