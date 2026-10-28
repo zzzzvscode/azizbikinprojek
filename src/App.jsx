@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from './context/ThemeContext';
 import { SoundProvider } from './context/SoundContext';
 import Home from './pages/Home';
@@ -46,6 +47,7 @@ export default function App() {
         ) : (
           <Home onOpenProject={openProject} />
         )}
+        <Analytics />
       </SoundProvider>
     </ThemeProvider>
   )
