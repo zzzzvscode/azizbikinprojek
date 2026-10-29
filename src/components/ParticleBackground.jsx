@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Particles from './Particles';
 
 const METEORS = [
@@ -19,11 +20,41 @@ const METEORS = [
 ];
 
 export default function ParticleBackground() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia('(max-width: 767px)').matches,
+  );
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const updateMobile = () => setIsMobile(mobileQuery.matches);
+    mobileQuery.addEventListener('change', updateMobile);
+    return () => mobileQuery.removeEventListener('change', updateMobile);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return undefined;
+
+    let scrollTimeout;
+    const pauseDuringScroll = () => {
+      setIsScrolling(true);
+      window.clearTimeout(scrollTimeout);
+      scrollTimeout = window.setTimeout(() => setIsScrolling(false), 120);
+    };
+
+    window.addEventListener('scroll', pauseDuringScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', pauseDuringScroll);
+      window.clearTimeout(scrollTimeout);
+    };
+  }, [isMobile]);
+
   return (
     <>
       <Particles
         particleColors={['#ffffff', '#ffffff', '#ffffff']}
-        particleCount={660}
+        particleCount={isMobile ? 280 : 660}
+        pixelRatio={isMobile ? 1 : undefined}
         particleSpread={10}
         speed={0.01}
         particleBaseSize={40}
@@ -45,6 +76,7 @@ export default function ParticleBackground() {
         cameraDistance={20}
         variation={0}
         opacity={1}
+        paused={isMobile && isScrolling}
         clickBurst={false}
         intro={false}
         lightMode={false}
