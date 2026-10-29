@@ -109,12 +109,17 @@ export default function Contact() {
   const [commentError, setCommentError] = useState('');
   const [commentCooldownSeconds, setCommentCooldownSeconds] = useState(0);
   const [commentCooldownTotalSeconds, setCommentCooldownTotalSeconds] = useState(0);
+  const [isSpamCooldown, setIsSpamCooldown] = useState(false);
 
   useEffect(() => {
     if (commentCooldownSeconds <= 0) return undefined;
 
     const timer = window.setTimeout(() => {
       setCommentCooldownSeconds((seconds) => Math.max(0, seconds - 1));
+      if (commentCooldownSeconds <= 1) {
+        setIsSpamCooldown(false);
+        setCommentError('');
+      }
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [commentCooldownSeconds]);
@@ -242,12 +247,12 @@ export default function Contact() {
             1,
             Number(responseData.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
           );
+          const isSpamBlock = responseData.reason === 'duplicate_message' || retryAfterSeconds > 60;
           setCommentCooldownTotalSeconds(retryAfterSeconds);
           setCommentCooldownSeconds(retryAfterSeconds);
-          if (responseData.reason === 'duplicate_message') {
-            setCommentError(
-              `JANGAN SPAM!! Komentar yang sama sudah dikirim 3 kali berturut-turut. Coba lagi dalam ${formatCooldown(retryAfterSeconds)}.`,
-            );
+          setIsSpamCooldown(isSpamBlock);
+          if (isSpamBlock) {
+            setCommentError('JANGAN SPAM!! Kamu dibatasi selama 1 jam.');
           } else {
             setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
           }
@@ -276,6 +281,7 @@ export default function Contact() {
       );
       setCommentCooldownTotalSeconds(cooldownSeconds);
       setCommentCooldownSeconds(cooldownSeconds);
+      setIsSpamCooldown(false);
       setCommentData({ name: '', message: '', photo: '', photoName: '' });
     } catch (error) {
       console.error('Comment submission failed:', error);
@@ -542,7 +548,9 @@ export default function Contact() {
                   {isCommentSubmitting
                     ? 'Mengirim...'
                     : commentCooldownSeconds > 0
-                      ? `Kirim lagi ${formatCooldown(commentCooldownSeconds)}`
+                      ? isSpamCooldown
+                        ? 'Kirim lagi dalam 1 jam'
+                        : `Kirim lagi ${formatCooldown(commentCooldownSeconds)}`
                       : 'Kirim Komentar'}
                 </span>
               </button>
@@ -550,7 +558,9 @@ export default function Contact() {
                 <div
                   className="contact-comment-cooldown"
                   role="progressbar"
-                  aria-label={`Waktu tunggu komentar: ${formatCooldown(commentCooldownSeconds)} tersisa`}
+                  aria-label={isSpamCooldown
+                    ? 'Waktu tunggu komentar karena spam: 1 jam'
+                    : `Waktu tunggu komentar: ${formatCooldown(commentCooldownSeconds)} tersisa`}
                   aria-valuemin={0}
                   aria-valuemax={commentCooldownTotalSeconds}
                   aria-valuenow={commentCooldownSeconds}
@@ -565,7 +575,9 @@ export default function Contact() {
               )}
               {commentCooldownSeconds > 0 && (
                 <p className="contact-comment-cooldown-label" role="status" aria-live="polite">
-                  Bisa komentar lagi dalam {commentCooldownSeconds}s
+                  {isSpamCooldown
+                    ? `Bisa komentar lagi dalam ${formatCooldown(commentCooldownSeconds)}`
+                    : `JANGAN SPAM!!`}
                 </p>
               )}
             </form>
