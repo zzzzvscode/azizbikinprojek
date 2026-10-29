@@ -44,8 +44,10 @@ set search_path = public, pg_temp
 as $$
 declare
   v_cooldown interval := interval '60 seconds';
+  v_spam_cooldown interval := interval '1 hour';
   v_next_allowed_at timestamptz;
   v_retry_after_seconds integer;
+  v_consecutive_duplicate_count integer;
   v_comment public.comments%rowtype;
 begin
   if p_ip_hash !~ '^[0-9a-f]{64}$'
@@ -53,6 +55,52 @@ begin
     or char_length(trim(p_comment)) not between 1 and 500
     or (p_avatar_url is not null and char_length(p_avatar_url) > 100000) then
     raise exception 'Invalid comment input';
+  end if;
+
+  perform pg_advisory_xact_lock(726184, 1);
+
+  select count(*)
+  into v_consecutive_duplicate_count
+  from (
+    select comment
+    from public.comments
+    order by id desc
+    limit 3
+  ) recent_comments
+  where lower(trim(recent_comments.comment)) = lower(trim(p_comment));
+
+  if v_consecutive_duplicate_count = 3 then
+    select next_allowed_at
+    into v_next_allowed_at
+    from public.comment_rate_limits
+    where ip_hash = p_ip_hash;
+
+    if found and v_next_allowed_at > clock_timestamp() + v_cooldown then
+      v_retry_after_seconds := greatest(
+        1,
+        ceil(extract(epoch from v_next_allowed_at - clock_timestamp()))::integer
+      );
+    else
+      insert into public.comment_rate_limits (ip_hash, next_allowed_at)
+      values (p_ip_hash, clock_timestamp() + v_spam_cooldown)
+      on conflict (ip_hash) do update
+        set next_allowed_at = greatest(
+          public.comment_rate_limits.next_allowed_at,
+          excluded.next_allowed_at
+        )
+      returning next_allowed_at into v_next_allowed_at;
+
+      v_retry_after_seconds := greatest(
+        1,
+        ceil(extract(epoch from v_next_allowed_at - clock_timestamp()))::integer
+      );
+    end if;
+
+    return jsonb_build_object(
+      'allowed', false,
+      'reason', 'duplicate_message',
+      'retry_after_seconds', v_retry_after_seconds
+    );
   end if;
 
   delete from public.comment_rate_limits

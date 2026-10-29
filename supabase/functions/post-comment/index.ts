@@ -106,10 +106,22 @@ Deno.serve(async (request) => {
 
     const result = await response.json();
     if (!result.allowed) {
-      const retryAfterSeconds = Math.max(1, Number(result.retry_after_seconds) || 120);
+      const retryAfterSeconds = Math.max(1, Number(result.retry_after_seconds) || 60);
+      if (result.reason === 'duplicate_message') {
+        return jsonResponse(
+          {
+            error: 'Komentar yang sama sudah dikirim 3 kali berturut-turut.',
+            reason: 'duplicate_message',
+            retry_after_seconds: retryAfterSeconds,
+          },
+          429,
+          { 'Retry-After': String(retryAfterSeconds) },
+        );
+      }
+
       return jsonResponse(
         {
-          error: 'Tunggu sebelum mengirim komentar lagi.',
+          error: 'JANGAN SPAM!! Tunggu sebelum mengirim komentar lagi.',
           retry_after_seconds: retryAfterSeconds,
         },
         429,
@@ -119,7 +131,7 @@ Deno.serve(async (request) => {
 
     return jsonResponse({
       comment: result.comment,
-      retry_after_seconds: Number(result.retry_after_seconds) || 120,
+      retry_after_seconds: Number(result.retry_after_seconds) || 60,
     }, 201);
   } catch (error) {
     console.error('Comment function request failed:', error);

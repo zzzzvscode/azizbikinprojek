@@ -18,7 +18,7 @@ import SkeletonImage from './SkeletonImage';
 import '../style/Contact.css';
 
 const COMMENTS_STORAGE_KEY = 'portfolio-contact-comments';
-const DEFAULT_COMMENT_COOLDOWN_SECONDS = 120;
+const DEFAULT_COMMENT_COOLDOWN_SECONDS = 60;
 
 const readSavedComments = () => {
   try {
@@ -244,7 +244,13 @@ export default function Contact() {
           );
           setCommentCooldownTotalSeconds(retryAfterSeconds);
           setCommentCooldownSeconds(retryAfterSeconds);
-          setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
+          if (responseData.reason === 'duplicate_message') {
+            setCommentError(
+              `JANGAN SPAM!! Komentar yang sama sudah dikirim 3 kali berturut-turut. Coba lagi dalam ${formatCooldown(retryAfterSeconds)}.`,
+            );
+          } else {
+            setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
+          }
           return;
         }
 
