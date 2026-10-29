@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   Code2,
   ExternalLink,
@@ -44,6 +45,8 @@ import SkeletonImage from './SkeletonImage';
 import BorderGlow from './BorderGlow';
 import '../style/PortfolioSection.css';
 import LiquidMetalBorder from './LiquidMetalBorder';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const PROJECTS_DATA = [
   {
@@ -221,6 +224,11 @@ export default function PortfolioSection({ onOpenProject }) {
     }, portfolio);
 
     return () => context.revert();
+  }, [activeTab]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => window.cancelAnimationFrame(frame);
   }, [activeTab]);
 
   useEffect(() => {
