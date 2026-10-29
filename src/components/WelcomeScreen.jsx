@@ -18,6 +18,7 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
   const exitTimerRef = useRef(0);
   const lanyardIntroTimerRef = useRef(0);
   const completedRef = useRef(false);
+  const unlockScrollRef = useRef(null);
 
   useLayoutEffect(() => {
     const { body, documentElement } = document;
@@ -31,6 +32,7 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
       bodyHeight: body.style.height,
       bodyOverflow: body.style.overflow,
     };
+    let isLocked = true;
     const preventScroll = (event) => event.preventDefault();
     const preventScrollKeys = (event) => {
       if (
@@ -58,7 +60,9 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
     document.addEventListener('touchmove', preventScroll, { passive: false });
     document.addEventListener('keydown', preventScrollKeys);
 
-    return () => {
+    const unlockScroll = () => {
+      if (!isLocked) return;
+      isLocked = false;
       document.removeEventListener('wheel', preventScroll);
       document.removeEventListener('touchmove', preventScroll);
       document.removeEventListener('keydown', preventScrollKeys);
@@ -72,11 +76,18 @@ export default function WelcomeScreen({ onComplete, onExitAnimationStart }) {
       body.style.overflow = previousStyles.bodyOverflow;
       window.scrollTo(0, 0);
     };
+    unlockScrollRef.current = unlockScroll;
+
+    return () => {
+      unlockScroll();
+      unlockScrollRef.current = null;
+    };
   }, []);
 
   const finishIntro = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
+    unlockScrollRef.current?.();
     setIsLeaving(true);
     lanyardIntroTimerRef.current = window.setTimeout(
       onExitAnimationStart,
