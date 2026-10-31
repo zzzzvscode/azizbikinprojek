@@ -16,7 +16,7 @@ export default function PortfolioNavbar() {
 
   const navLinks = [
     { label: 'Karya', href: '#karya' },
-    { label: '3D Playground', href: '#lab' },
+    // { label: '3D Playground', href: '#lab' },
     { label: 'Keahlian', href: '#keahlian' },
     { label: 'Tentang', href: '#tentang' },
     { label: 'Kontak', href: '#kontak' },

@@ -575,9 +575,7 @@ export default function Contact() {
               )}
               {commentCooldownSeconds > 0 && (
                 <p className="contact-comment-cooldown-label" role="status" aria-live="polite">
-                  {isSpamCooldown
-                    ? `Bisa komentar lagi dalam ${formatCooldown(commentCooldownSeconds)}`
-                    : `JANGAN SPAM!!`}
+                  Bisa komentar lagi dalam {formatCooldown(commentCooldownSeconds)}
                 </p>
               )}
             </form>
