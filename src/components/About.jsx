@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowUpRight, Code2, FileText } from 'lucide-react';
-import portrait from '../assets/orangAbout/me2.png';
+import portrait from '../assets/orangAbout/me2.webp';
 import spiderSuit from '../assets/orangAbout/PhotoSpiderman.png';
 import mobileSpiderSuit from '../assets/orangAbout/PhotoSpiderman-mobile.webp';
 import SkeletonImage from './SkeletonImage';

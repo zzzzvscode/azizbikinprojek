@@ -28,17 +28,17 @@ import firebaseLogo from '../assets/TECH/firebase-icon.svg';
 import cssLogo from '../assets/TECH/css-svgrepo-com.svg';
 
 import udemy01Sertif from '../assets/SERTIFIKAT/UC-f106f323-2cad-4f16-a2d3-e0e843fb2016-1.png';
-import pklSertif from '../assets/SERTIFIKAT/pkl.png'
+import pklSertif from '../assets/SERTIFIKAT/pkl.webp'
 import mobilePklSertif from '../assets/SERTIFIKAT/pkl-mobile.webp';
-import cssjsCourse from '../assets/SERTIFIKAT/css-js-course.jpg'
-import ksmSertif from '../assets/SERTIFIKAT/ksm.png'
+import cssjsCourse from '../assets/SERTIFIKAT/css-js-course.webp'
+import ksmSertif from '../assets/SERTIFIKAT/ksm.webp'
 import mobileKsmSertif from '../assets/SERTIFIKAT/ksm-mobile.webp';
 
-import cyberGyzn from  '../assets/Project/cyberGyzn.png';
+import cyberGyzn from  '../assets/Project/cyberGyzn.webp';
 import mobileCyberGyzn from '../assets/Project/cyberGyzn-mobile.webp';
-import botArtikel from '../assets/Project/botArtikel.png'
+import botArtikel from '../assets/Project/botArtikel.webp'
 import mobileBotArtikel from '../assets/Project/botArtikel-mobile.webp';
-import dataSiswa from '../assets/Project/dataSiswa.png'
+import dataSiswa from '../assets/Project/dataSiswa.webp'
 import mobileDataSiswa from '../assets/Project/dataSiswa-mobile.webp';
 
 import SkeletonImage from './SkeletonImage';

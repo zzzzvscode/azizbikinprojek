@@ -1,11 +1,11 @@
 import React from 'react';
 import { Award, Code2, Trophy } from 'lucide-react';
 import LiquidMetalBorder from './LiquidMetalBorder';
-import texmacoLogo from '../assets/LOGO/texmaco.png';
+import texmacoLogo from '../assets/LOGO/texmaco.webp';
 import mobileTexmacoLogo from '../assets/LOGO/texmaco-mobile.webp';
-import mtsLogo from '../assets/LOGO/masamujaya.png';
+import mtsLogo from '../assets/LOGO/masamujaya.webp';
 import mobileMtsLogo from '../assets/LOGO/masamujaya-mobile.webp';
-import stekomLogo from '../assets/LOGO/stekom.png';
+import stekomLogo from '../assets/LOGO/stekom.webp';
 import mobileStekomLogo from '../assets/LOGO/stekom-mobile.webp';
 import SkeletonImage from './SkeletonImage';
 import '../style/ExperienceEducation.css';

@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 
-export default function SkeletonImage({ className = '', src, mobileSrc, onLoad, onError, ...props }) {
+export default function SkeletonImage({
+  className = '',
+  src,
+  mobileSrc,
+  onLoad,
+  onError,
+  loading = 'lazy',
+  ...props
+}) {
   const [loaded, setLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
@@ -27,6 +35,8 @@ export default function SkeletonImage({ className = '', src, mobileSrc, onLoad, 
     <img
       {...props}
       src={isMobile && mobileSrc ? mobileSrc : src}
+      loading={loading}
+      decoding="async"
       className={`skeleton-image${loaded ? '' : ' is-loading'}${className ? ` ${className}` : ''}`}
       onLoad={handleLoad}
       onError={handleError}

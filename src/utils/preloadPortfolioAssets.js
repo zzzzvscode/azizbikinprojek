@@ -1,7 +1,7 @@
-import backCardImage from '../assets/lanyard/backCard.png';
+import backCardImage from '../assets/lanyard/backCard.webp';
 import mobileBackCardImage from '../assets/lanyard/backCard-mobile.webp';
-import bandImage from '../assets/lanyard/bandd.png';
-import frontCardImage from '../assets/lanyard/frontCard.png';
+import bandImage from '../assets/lanyard/bandd.webp';
+import frontCardImage from '../assets/lanyard/frontCard.webp';
 import mobileFrontCardImage from '../assets/lanyard/frontCard-mobile.webp';
 
 const DESKTOP_LANYARD_ASSETS = [
