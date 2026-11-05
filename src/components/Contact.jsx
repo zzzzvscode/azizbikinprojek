@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpRight,
   Check,
+  ChevronDown,
   Copy,
   ImagePlus,
   Mail,
@@ -19,6 +20,8 @@ import '../style/Contact.css';
 
 const COMMENTS_STORAGE_KEY = 'portfolio-contact-comments';
 const DEFAULT_COMMENT_COOLDOWN_SECONDS = 60;
+const COMMENT_PAGE_SIZE = 20;
+const COMMENT_COLUMNS = 'id, name, comment, avatar_url, created_at';
 
 const readSavedComments = () => {
   try {
@@ -103,7 +106,12 @@ export default function Contact() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
   const [comments, setComments] = useState([]);
+  const [totalComments, setTotalComments] = useState(0);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  const [loadingMoreComments, setLoadingMoreComments] = useState(false);
+  const [commentsLoadError, setCommentsLoadError] = useState('');
+  const [commentCursor, setCommentCursor] = useState(null);
+  const knownCommentIds = useRef(new Set());
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [commentData, setCommentData] = useState({ name: '', message: '', photo: '', photoName: '' });
   const [commentError, setCommentError] = useState('');
@@ -126,30 +134,37 @@ export default function Contact() {
 
   useEffect(() => {
     if (!supabase) {
-      setComments(readSavedComments());
+      const savedComments = readSavedComments();
+      setComments(savedComments);
+      setTotalComments(savedComments.length);
       setCommentsLoading(false);
       return undefined;
     }
 
     let isActive = true;
     const loadComments = async () => {
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from('comments')
-        .select('id, name, comment, avatar_url, created_at')
+        .select(COMMENT_COLUMNS, { count: 'exact' })
         .order('created_at', { ascending: false })
-        .limit(100);
+        .order('id', { ascending: false })
+        .range(0, COMMENT_PAGE_SIZE - 1);
 
       if (!isActive) return;
       if (error) {
-        setCommentError('Komentar gagal dimuat. Coba muat ulang halaman.');
+        setCommentsLoadError('Komentar gagal dimuat. Coba muat ulang halaman.');
       } else {
         const loadedComments = (data || []).map(mapSupabaseComment);
+        loadedComments.forEach((comment) => knownCommentIds.current.add(comment.id));
+        setCommentCursor(loadedComments.at(-1) || null);
+        setTotalComments(count ?? loadedComments.length);
         setComments((current) => {
-          const merged = new Map(loadedComments.map((comment) => [comment.id, comment]));
-          current.forEach((comment) => merged.set(comment.id, comment));
+          const merged = new Map(current.map((comment) => [comment.id, comment]));
+          loadedComments.forEach((comment) => merged.set(comment.id, comment));
           return [...merged.values()]
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0, 100);
+            .sort((a, b) => (
+              new Date(b.createdAt) - new Date(a.createdAt) || Number(b.id) - Number(a.id)
+            ));
         });
       }
       setCommentsLoading(false);
@@ -162,22 +177,28 @@ export default function Contact() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
         if (payload.eventType === 'INSERT') {
           const nextComment = mapSupabaseComment(payload.new);
-          setComments((current) => [
-            nextComment,
-            ...current.filter((comment) => comment.id !== nextComment.id),
-          ].slice(0, 100));
+          if (!knownCommentIds.current.has(nextComment.id)) {
+            knownCommentIds.current.add(nextComment.id);
+            setComments((current) => [
+              nextComment,
+              ...current.filter((comment) => comment.id !== nextComment.id),
+            ]);
+            setTotalComments((current) => current + 1);
+          }
         } else if (payload.eventType === 'UPDATE') {
           const updatedComment = mapSupabaseComment(payload.new);
           setComments((current) => current.map((comment) => (
             comment.id === updatedComment.id ? updatedComment : comment
           )));
         } else if (payload.eventType === 'DELETE') {
+          knownCommentIds.current.delete(payload.old.id);
           setComments((current) => current.filter((comment) => comment.id !== payload.old.id));
+          setTotalComments((current) => Math.max(0, current - 1));
         }
       })
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' && isActive) {
-          setCommentError('Koneksi realtime komentar terputus. Coba muat ulang halaman.');
+          setCommentsLoadError('Koneksi realtime komentar terputus. Coba muat ulang halaman.');
         }
       });
 
@@ -187,7 +208,45 @@ export default function Contact() {
     };
   }, []);
 
-  const email = 'gyzeennnpro@smktexmaco.my.id';
+  const loadMoreComments = async () => {
+    if (!supabase || !commentCursor || loadingMoreComments) return;
+
+    setLoadingMoreComments(true);
+    setCommentsLoadError('');
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select(COMMENT_COLUMNS)
+        .or(
+          `created_at.lt.${commentCursor.createdAt},and(created_at.eq.${commentCursor.createdAt},id.lt.${commentCursor.id})`,
+        )
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(0, COMMENT_PAGE_SIZE - 1);
+
+      if (error) throw error;
+
+      const loadedComments = (data || []).map(mapSupabaseComment);
+      loadedComments.forEach((comment) => knownCommentIds.current.add(comment.id));
+      setComments((current) => {
+        const merged = new Map(current.map((comment) => [comment.id, comment]));
+        loadedComments.forEach((comment) => merged.set(comment.id, comment));
+        return [...merged.values()]
+          .sort((a, b) => (
+            new Date(b.createdAt) - new Date(a.createdAt) || Number(b.id) - Number(a.id)
+          ));
+      });
+      setCommentCursor(loadedComments.at(-1) || null);
+      if (!loadedComments.length) setTotalComments(comments.length);
+    } catch (error) {
+      console.error('Loading more comments failed:', error);
+      setCommentsLoadError('Komentar lainnya gagal dimuat. Coba lagi.');
+    } finally {
+      setLoadingMoreComments(false);
+    }
+  };
+
+  const email = 'gyzeennnpro@gmail.com';
 
   const copyEmail = () => {
     navigator.clipboard.writeText(email);
@@ -271,10 +330,14 @@ export default function Contact() {
       }
 
       const savedComment = mapSupabaseComment(data.comment);
+      if (!knownCommentIds.current.has(savedComment.id)) {
+        knownCommentIds.current.add(savedComment.id);
+        setTotalComments((current) => current + 1);
+      }
       setComments((current) => [
         savedComment,
         ...current.filter((comment) => comment.id !== savedComment.id),
-      ].slice(0, 100));
+      ]);
       const cooldownSeconds = Math.max(
         1,
         Number(data.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
@@ -494,7 +557,7 @@ export default function Contact() {
           <div className="contact-comments-panel">
             <div className="contact-comments-header">
               <span className="contact-comments-icon"><MessageSquare size={19} /></span>
-              <h2>Komentar <span>({comments.length})</span></h2>
+              <h2>Komentar <span>({totalComments.toLocaleString('id-ID')})</span></h2>
             </div>
 
             <form onSubmit={handleCommentSubmit} className="contact-comment-form">
@@ -613,6 +676,20 @@ export default function Contact() {
                 </article>
               )) : (
                 <p className="contact-comments-empty">Belum ada komentar. Jadilah yang pertama!</p>
+              )}
+              {commentsLoadError && (
+                <p className="contact-comments-load-error" role="alert">{commentsLoadError}</p>
+              )}
+              {!commentsLoading && comments.length > 0 && comments.length < totalComments && (
+                <button
+                  type="button"
+                  className="contact-comments-more"
+                  onClick={loadMoreComments}
+                  disabled={loadingMoreComments}
+                >
+                  <span>{loadingMoreComments ? 'Memuat komentar...' : 'Lihat komentar lainnya'}</span>
+                  {!loadingMoreComments && <ChevronDown size={16} aria-hidden="true" />}
+                </button>
               )}
             </div>
           </div>

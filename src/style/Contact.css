@@ -778,6 +778,57 @@
   scrollbar-width: thin;
 }
 
+.contact-comments-more {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 6px;
+  border: 0;
+  background: transparent;
+  color: #a7b0c0;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.contact-comments-list:has(.contact-comments-more) .contact-comment-item:last-of-type {
+  border-bottom: 0;
+}
+
+.contact-comments-more::before,
+.contact-comments-more::after {
+  height: 1px;
+  flex: 1;
+  content: '';
+}
+
+.contact-comments-more::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12));
+}
+
+.contact-comments-more::after {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.contact-comments-more:hover:not(:disabled) {
+  color: #38bdf8;
+}
+
+.contact-comments-more:disabled {
+  color: #788294;
+  cursor: wait;
+}
+
+.contact-comments-load-error {
+  margin: 12px 0;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .contact-comment-item {
   display: flex;
   gap: 12px;
