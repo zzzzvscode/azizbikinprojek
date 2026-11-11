@@ -30,7 +30,7 @@ export default function ExperienceEducation() {
               <div className="experience-card-copy">
                 <h3>SMK Texmaco Semarang</h3>
                 <p>Sekolah Menengah Kejuruan</p>
-                <span className="experience-date">2024 – 2027</span>
+                <span className="experience-date">2024 – Sekarang</span>
               </div>
             </article>
             <article className="experience-card">
