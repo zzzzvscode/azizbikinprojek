@@ -1,6 +1,6 @@
 .experience-section {
   position: relative;
-  padding: 70px 24px 24px;
+  padding: 40px 24px;
 }
 
 .experience-container {
@@ -10,7 +10,8 @@
 
 .experience-columns {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 700px);
+  justify-content: center;
   gap: clamp(24px, 3vw, 40px);
 }
 
@@ -151,7 +152,7 @@
 
 @media (max-width: 760px) {
   .experience-section {
-    padding: 52px 20px 16px;
+    padding: 40px 20px;
   }
 
   .experience-columns {
@@ -177,6 +178,13 @@
   .experience-stat-icon {
     width: 44px;
     height: 44px;
+  }
+}
+
+@media (max-width: 560px) {
+  .experience-section {
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
 }
 

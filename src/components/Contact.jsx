@@ -1,10 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ArrowUpRight,
   Check,
-  ChevronDown,
-  Copy,
-  ImagePlus,
   Mail,
   MessageSquare,
   Send,
@@ -12,347 +9,16 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import instagramLogo from '../assets/TECH/instagram.svg';
-import githubLogo from '../assets/TECH/github-svgrepo-com.svg';
 import tiktokLogo from '../assets/TECH/tiktok.svg';
 import { supabase } from '../lib/supabase';
 import SkeletonImage from './SkeletonImage';
 import '../style/Contact.css';
 
-const COMMENTS_STORAGE_KEY = 'portfolio-contact-comments';
-const DEFAULT_COMMENT_COOLDOWN_SECONDS = 60;
-const COMMENT_PAGE_SIZE = 20;
-const COMMENT_COLUMNS = 'id, name, comment, avatar_url, created_at';
-
-const readSavedComments = () => {
-  try {
-    const savedComments = JSON.parse(localStorage.getItem(COMMENTS_STORAGE_KEY) || '[]');
-    return Array.isArray(savedComments) ? savedComments : [];
-  } catch {
-    return [];
-  }
-};
-
-const mapSupabaseComment = (comment) => ({
-  id: comment.id,
-  name: comment.name,
-  message: comment.comment,
-  photo: comment.avatar_url,
-  createdAt: comment.created_at,
-});
-
-const formatCommentAge = (createdAt) => {
-  const createdTime = new Date(createdAt).getTime();
-  if (!Number.isFinite(createdTime)) return 'Waktu tidak diketahui';
-
-  const elapsedSeconds = Math.max(0, Math.floor((Date.now() - createdTime) / 1000));
-  if (elapsedSeconds < 60) return 'Baru saja';
-
-  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-  if (elapsedMinutes < 60) return `${elapsedMinutes} menit lalu`;
-
-  const elapsedHours = Math.floor(elapsedMinutes / 60);
-  if (elapsedHours < 24) return `${elapsedHours} jam lalu`;
-
-  const elapsedDays = Math.floor(elapsedHours / 24);
-  return `${elapsedDays} hari lalu`;
-};
-
-const formatCooldown = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-};
-
-const createProfileThumbnail = (file) => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.onerror = reject;
-  reader.onload = () => {
-    const image = new Image();
-    image.onerror = reject;
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      const size = 128;
-      const cropSize = Math.min(image.naturalWidth, image.naturalHeight);
-      if (!context) {
-        reject(new Error('Canvas tidak tersedia'));
-        return;
-      }
-
-      canvas.width = size;
-      canvas.height = size;
-      context.drawImage(
-        image,
-        (image.naturalWidth - cropSize) / 2,
-        (image.naturalHeight - cropSize) / 2,
-        cropSize,
-        cropSize,
-        0,
-        0,
-        size,
-        size,
-      );
-      resolve(canvas.toDataURL('image/jpeg', 0.78));
-    };
-    image.src = String(reader.result);
-  };
-  reader.readAsDataURL(file);
-});
-
 export default function Contact() {
-  const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
-  const [comments, setComments] = useState([]);
-  const [totalComments, setTotalComments] = useState(0);
-  const [commentsLoading, setCommentsLoading] = useState(true);
-  const [loadingMoreComments, setLoadingMoreComments] = useState(false);
-  const [commentsLoadError, setCommentsLoadError] = useState('');
-  const [commentCursor, setCommentCursor] = useState(null);
-  const knownCommentIds = useRef(new Set());
-  const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
-  const [commentData, setCommentData] = useState({ name: '', message: '', photo: '', photoName: '' });
-  const [commentError, setCommentError] = useState('');
-  const [commentCooldownSeconds, setCommentCooldownSeconds] = useState(0);
-  const [commentCooldownTotalSeconds, setCommentCooldownTotalSeconds] = useState(0);
-  const [isSpamCooldown, setIsSpamCooldown] = useState(false);
-
-  useEffect(() => {
-    if (commentCooldownSeconds <= 0) return undefined;
-
-    const timer = window.setTimeout(() => {
-      setCommentCooldownSeconds((seconds) => Math.max(0, seconds - 1));
-      if (commentCooldownSeconds <= 1) {
-        setIsSpamCooldown(false);
-        setCommentError('');
-      }
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, [commentCooldownSeconds]);
-
-  useEffect(() => {
-    if (!supabase) {
-      const savedComments = readSavedComments();
-      setComments(savedComments);
-      setTotalComments(savedComments.length);
-      setCommentsLoading(false);
-      return undefined;
-    }
-
-    let isActive = true;
-    const loadComments = async () => {
-      const { data, error, count } = await supabase
-        .from('comments')
-        .select(COMMENT_COLUMNS, { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false })
-        .range(0, COMMENT_PAGE_SIZE - 1);
-
-      if (!isActive) return;
-      if (error) {
-        setCommentsLoadError('Komentar gagal dimuat. Coba muat ulang halaman.');
-      } else {
-        const loadedComments = (data || []).map(mapSupabaseComment);
-        loadedComments.forEach((comment) => knownCommentIds.current.add(comment.id));
-        setCommentCursor(loadedComments.at(-1) || null);
-        setTotalComments(count ?? loadedComments.length);
-        setComments((current) => {
-          const merged = new Map(current.map((comment) => [comment.id, comment]));
-          loadedComments.forEach((comment) => merged.set(comment.id, comment));
-          return [...merged.values()]
-            .sort((a, b) => (
-              new Date(b.createdAt) - new Date(a.createdAt) || Number(b.id) - Number(a.id)
-            ));
-        });
-      }
-      setCommentsLoading(false);
-    };
-
-    loadComments();
-
-    const channel = supabase
-      .channel('comments-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          const nextComment = mapSupabaseComment(payload.new);
-          if (!knownCommentIds.current.has(nextComment.id)) {
-            knownCommentIds.current.add(nextComment.id);
-            setComments((current) => [
-              nextComment,
-              ...current.filter((comment) => comment.id !== nextComment.id),
-            ]);
-            setTotalComments((current) => current + 1);
-          }
-        } else if (payload.eventType === 'UPDATE') {
-          const updatedComment = mapSupabaseComment(payload.new);
-          setComments((current) => current.map((comment) => (
-            comment.id === updatedComment.id ? updatedComment : comment
-          )));
-        } else if (payload.eventType === 'DELETE') {
-          knownCommentIds.current.delete(payload.old.id);
-          setComments((current) => current.filter((comment) => comment.id !== payload.old.id));
-          setTotalComments((current) => Math.max(0, current - 1));
-        }
-      })
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR' && isActive) {
-          setCommentsLoadError('Koneksi realtime komentar terputus. Coba muat ulang halaman.');
-        }
-      });
-
-    return () => {
-      isActive = false;
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const loadMoreComments = async () => {
-    if (!supabase || !commentCursor || loadingMoreComments) return;
-
-    setLoadingMoreComments(true);
-    setCommentsLoadError('');
-    try {
-      const { data, error } = await supabase
-        .from('comments')
-        .select(COMMENT_COLUMNS)
-        .or(
-          `created_at.lt.${commentCursor.createdAt},and(created_at.eq.${commentCursor.createdAt},id.lt.${commentCursor.id})`,
-        )
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false })
-        .range(0, COMMENT_PAGE_SIZE - 1);
-
-      if (error) throw error;
-
-      const loadedComments = (data || []).map(mapSupabaseComment);
-      loadedComments.forEach((comment) => knownCommentIds.current.add(comment.id));
-      setComments((current) => {
-        const merged = new Map(current.map((comment) => [comment.id, comment]));
-        loadedComments.forEach((comment) => merged.set(comment.id, comment));
-        return [...merged.values()]
-          .sort((a, b) => (
-            new Date(b.createdAt) - new Date(a.createdAt) || Number(b.id) - Number(a.id)
-          ));
-      });
-      setCommentCursor(loadedComments.at(-1) || null);
-      if (!loadedComments.length) setTotalComments(comments.length);
-    } catch (error) {
-      console.error('Loading more comments failed:', error);
-      setCommentsLoadError('Komentar lainnya gagal dimuat. Coba lagi.');
-    } finally {
-      setLoadingMoreComments(false);
-    }
-  };
-
-  const email = 'gyzeennnpro@gmail.com';
-
-  const copyEmail = () => {
-    navigator.clipboard.writeText(email);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  const handleProfilePhoto = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setCommentError('Pilih file gambar yang valid.');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setCommentError('Ukuran foto maksimal 5 MB.');
-      event.target.value = '';
-      return;
-    }
-
-    try {
-      const photo = await createProfileThumbnail(file);
-      setCommentData((current) => ({ ...current, photo, photoName: file.name }));
-      setCommentError('');
-    } catch {
-      setCommentError('Foto tidak dapat dibaca. Coba pilih gambar lain.');
-    }
-  };
-
-  const handleCommentSubmit = async (event) => {
-    event.preventDefault();
-    setCommentError('');
-
-    const name = commentData.name.trim();
-    const message = commentData.message.trim();
-
-    if (!supabase) {
-      setCommentError('Layanan komentar sedang tidak tersedia.');
-      return;
-    }
-
-    setIsCommentSubmitting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('post-comment', {
-        body: {
-          name,
-          comment: message,
-          avatar_url: commentData.photo || null,
-        },
-      });
-
-      if (error) {
-        if (error.context instanceof Response && error.context.status === 429) {
-          const responseData = await error.context.clone().json();
-          const retryAfterSeconds = Math.max(
-            1,
-            Number(responseData.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
-          );
-          const isSpamBlock = responseData.reason === 'duplicate_message' || retryAfterSeconds > 60;
-          setCommentCooldownTotalSeconds(retryAfterSeconds);
-          setCommentCooldownSeconds(retryAfterSeconds);
-          setIsSpamCooldown(isSpamBlock);
-          if (isSpamBlock) {
-            setCommentError('JANGAN SPAM!! Kamu dibatasi selama 1 jam.');
-          } else {
-            setCommentError(`Tunggu ${formatCooldown(retryAfterSeconds)} sebelum mengirim komentar lagi.`);
-          }
-          return;
-        }
-
-        console.error('Supabase comment insert failed:', error);
-        setCommentError(`Supabase: ${error.message || 'Komentar gagal dikirim. Coba lagi sebentar.'}`);
-        return;
-      }
-
-      if (!data?.comment) {
-        console.error('Comment function returned an invalid response:', data);
-        setCommentError('Komentar gagal dikirim. Coba lagi sebentar.');
-        return;
-      }
-
-      const savedComment = mapSupabaseComment(data.comment);
-      if (!knownCommentIds.current.has(savedComment.id)) {
-        knownCommentIds.current.add(savedComment.id);
-        setTotalComments((current) => current + 1);
-      }
-      setComments((current) => [
-        savedComment,
-        ...current.filter((comment) => comment.id !== savedComment.id),
-      ]);
-      const cooldownSeconds = Math.max(
-        1,
-        Number(data.retry_after_seconds) || DEFAULT_COMMENT_COOLDOWN_SECONDS,
-      );
-      setCommentCooldownTotalSeconds(cooldownSeconds);
-      setCommentCooldownSeconds(cooldownSeconds);
-      setIsSpamCooldown(false);
-      setCommentData({ name: '', message: '', photo: '', photoName: '' });
-    } catch (error) {
-      console.error('Comment submission failed:', error);
-      setCommentError('Komentar gagal dikirim. Coba lagi sebentar.');
-    } finally {
-      setIsCommentSubmitting(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -364,7 +30,7 @@ export default function Contact() {
     const message = formData.message.trim();
 
     try {
-      const response = await fetch('https://formspree.io/f/moeevqjj', {
+      const response = await fetch(' https://formspree.io/f/xbgopyry', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -422,34 +88,19 @@ export default function Contact() {
   };
 
   const socialLinks = [
-    // {
-    //   name: 'LinkedIn',
-    //   label: "Let's Connect",
-    //   sub: 'on LinkedIn Professional',
-    //   url: 'https://www.linkedin.com/in/eka-wahyu-maulidan-484021315',
-    //   icon: LinkedInIcon,
-    //   gradient: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)',
-    // },
     {
       name: 'Instagram',
       label: 'Instagram',
-      sub: '@alfariyusuff_',
-      url: 'https://www.instagram.com/alfariyusuff_/',
+      sub: '@zizzz__z.co',
+      url: 'https://www.instagram.com/zizzz__z.co',
       logo: instagramLogo,
     },
     {
       name: 'TikTok',
       label: 'TikTok',
-      sub: '@mie_ayamm__3',
-      url: 'https://www.tiktok.com/@mie_ayamm__3',
+      sub: '@zizz2511',
+      url: 'https://www.tiktok.com/@zizz2511',
       logo: tiktokLogo,
-    },
-    {
-      name: 'GitHub',
-      label: 'GitHub',
-      sub: '@alfariyusuff',
-      url: 'https://github.com/gyzeennnpro-sudo',
-      logo: githubLogo,
     },
   ];
 
@@ -518,7 +169,7 @@ export default function Contact() {
                 <Send size={16} aria-hidden="true" />
                 <span>{isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}</span>
               </button>
-              {contactError && <p className="contact-comment-error" role="alert">{contactError}</p>}
+              {contactError && <p className="contact-error" role="alert">{contactError}</p>}
               {submitSuccess && (
                 <div className="contact-success-toast" role="status">
                   <Check size={18} />
@@ -551,146 +202,6 @@ export default function Contact() {
                   );
                 })}
               </div>
-            </div>
-          </div>
-
-          <div className="contact-comments-panel">
-            <div className="contact-comments-header">
-              <span className="contact-comments-icon"><MessageSquare size={19} /></span>
-              <h2>Komentar <span>({totalComments.toLocaleString('id-ID')})</span></h2>
-            </div>
-
-            <form onSubmit={handleCommentSubmit} className="contact-comment-form">
-              <div className="contact-form-field">
-                <label htmlFor="comment-name">Nama</label>
-                <input
-                  id="comment-name"
-                  type="text"
-                  required
-                  maxLength={50}
-                  placeholder="Masukkan nama kamu"
-                  value={commentData.name}
-                  onChange={(event) => setCommentData({ ...commentData, name: event.target.value })}
-                />
-              </div>
-              <div className="contact-form-field">
-                <label htmlFor="comment-message">Komentar</label>
-                <textarea
-                  id="comment-message"
-                  required
-                  maxLength={500}
-                  rows={4}
-                  placeholder="Tulis komentar kamu di sini..."
-                  value={commentData.message}
-                  onChange={(event) => setCommentData({ ...commentData, message: event.target.value })}
-                />
-              </div>
-              <div className="contact-form-field">
-                <label htmlFor="comment-photo">Foto Profil (opsional)</label>
-                <label className="contact-photo-picker" htmlFor="comment-photo">
-                  <ImagePlus size={17} aria-hidden="true" />
-                  <span>{commentData.photoName || 'Pilih Foto Profil'}</span>
-                </label>
-                <input
-                  className="contact-photo-input"
-                  id="comment-photo"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePhoto}
-                />
-                <span className="contact-photo-hint">Ukuran file maksimal 5 MB</span>
-              </div>
-              {commentError && <p className="contact-comment-error" role="alert">{commentError}</p>}
-              <button
-                type="submit"
-                className="contact-submit-btn"
-                disabled={isCommentSubmitting || commentCooldownSeconds > 0}
-              >
-                <Send size={15} aria-hidden="true" />
-                <span>
-                  {isCommentSubmitting
-                    ? 'Mengirim...'
-                    : commentCooldownSeconds > 0
-                      ? isSpamCooldown
-                        ? 'Kirim lagi dalam 1 jam'
-                        : `Kirim lagi ${formatCooldown(commentCooldownSeconds)}`
-                      : 'Kirim Komentar'}
-                </span>
-              </button>
-              {commentCooldownSeconds > 0 && (
-                <div
-                  className="contact-comment-cooldown"
-                  role="progressbar"
-                  aria-label={isSpamCooldown
-                    ? 'Waktu tunggu komentar karena spam: 1 jam'
-                    : `Waktu tunggu komentar: ${formatCooldown(commentCooldownSeconds)} tersisa`}
-                  aria-valuemin={0}
-                  aria-valuemax={commentCooldownTotalSeconds}
-                  aria-valuenow={commentCooldownSeconds}
-                >
-                  <span
-                    className="contact-comment-cooldown-progress"
-                    style={{
-                      width: `${(commentCooldownSeconds / commentCooldownTotalSeconds) * 100}%`,
-                    }}
-                  />
-                </div>
-              )}
-              {commentCooldownSeconds > 0 && (
-                <p className="contact-comment-cooldown-label" role="status" aria-live="polite">
-                  Bisa komentar lagi dalam {formatCooldown(commentCooldownSeconds)}
-                </p>
-              )}
-            </form>
-
-            <div className="contact-comments-list" aria-live="polite" aria-busy={commentsLoading}>
-              {commentsLoading ? (
-                <div className="contact-comment-skeleton-list" role="status" aria-label="Memuat komentar">
-                  {[0, 1, 2].map((item) => (
-                    <div className="contact-comment-skeleton" key={item} aria-hidden="true">
-                      <span className="skeleton-block contact-comment-skeleton-avatar" />
-                      <span className="contact-comment-skeleton-copy">
-                        <span className="skeleton-block contact-comment-skeleton-name" />
-                        <span className="skeleton-block contact-comment-skeleton-line" />
-                        <span className="skeleton-block contact-comment-skeleton-line contact-comment-skeleton-line-short" />
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : comments.length ? comments.map((comment) => (
-                <article className="contact-comment-item" key={comment.id}>
-                  {comment.photo ? (
-                    <SkeletonImage className="contact-comment-avatar" src={comment.photo} alt="" />
-                  ) : (
-                    <span className="contact-comment-avatar contact-comment-avatar-fallback">
-                      <UserRound size={17} aria-hidden="true" />
-                    </span>
-                  )}
-                  <div className="contact-comment-content">
-                    <div className="contact-comment-meta">
-                      <strong>{comment.name}</strong>
-                      <time dateTime={comment.createdAt}>{formatCommentAge(comment.createdAt)}</time>
-                    </div>
-                    <p>{comment.message}</p>
-                  </div>
-                </article>
-              )) : (
-                <p className="contact-comments-empty">Belum ada komentar. Jadilah yang pertama!</p>
-              )}
-              {commentsLoadError && (
-                <p className="contact-comments-load-error" role="alert">{commentsLoadError}</p>
-              )}
-              {!commentsLoading && comments.length > 0 && comments.length < totalComments && (
-                <button
-                  type="button"
-                  className="contact-comments-more"
-                  onClick={loadMoreComments}
-                  disabled={loadingMoreComments}
-                >
-                  <span>{loadingMoreComments ? 'Memuat komentar...' : 'Lihat komentar lainnya'}</span>
-                  {!loadingMoreComments && <ChevronDown size={16} aria-hidden="true" />}
-                </button>
-              )}
             </div>
           </div>
         </div>

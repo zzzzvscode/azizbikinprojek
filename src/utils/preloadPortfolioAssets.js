@@ -1,19 +1,13 @@
-import backCardImage from '../assets/lanyard/backCard.webp';
-import mobileBackCardImage from '../assets/lanyard/backCard-mobile.webp';
-import bandImage from '../assets/lanyard/bandd.webp';
-import frontCardImage from '../assets/lanyard/frontCard.webp';
-import mobileFrontCardImage from '../assets/lanyard/frontCard-mobile.webp';
+import backCardImage from '../assets/lanyard/backCard.png';
+import bandImage from '../assets/lanyard/bandd.png';
+import frontCardImage from '../assets/lanyard/frontCard.png';
 
 const DESKTOP_LANYARD_ASSETS = [
   { label: 'Kartu depan', url: frontCardImage },
   { label: 'Kartu belakang', url: backCardImage },
   { label: 'Tali kartu', url: bandImage },
 ];
-const MOBILE_LANYARD_ASSETS = [
-  { label: 'Kartu depan', url: mobileFrontCardImage },
-  { label: 'Kartu belakang', url: mobileBackCardImage },
-  { label: 'Tali kartu', url: bandImage },
-];
+const MOBILE_LANYARD_ASSETS = DESKTOP_LANYARD_ASSETS;
 
 const IMAGE_LOAD_TIMEOUT = 15000;
 

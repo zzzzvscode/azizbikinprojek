@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Menu, X, Volume2, VolumeX, Send } from 'lucide-react';
 import { useSound } from '../context/SoundContext';
@@ -9,20 +9,31 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('Home');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedLink, setSelectedLink] = useState(null);
+  const [clickRevision, setClickRevision] = useState(0);
+  const [clickRipple, setClickRipple] = useState(null);
   const { soundEnabled, toggleSound } = useSound();
+  const navItemsRef = useRef([]);
+  const activePillRef = useRef(null);
+  const rippleSequenceRef = useRef(0);
 
   const navLinks = [
     { name: 'Home', href: '#Home' },
     { name: 'About', href: '#About' },
-    { name: 'Portfolio', section: 'Portofolio', href: '#Portofolio' },
+    { name: 'Hobby', section: 'Projects', href: '#Projects' },
     { name: 'Contact', href: '#Contact' },
   ];
+  const activeLinkIndex = Math.max(
+    0,
+    navLinks.findIndex(link => (link.section || link.name) === activeSection),
+  );
+  const highlightedLinkIndex = selectedLink ?? activeLinkIndex;
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
 
-      const sections = ['Home', 'About', 'Portofolio', 'Contact'];
+      const sections = ['Home', 'About', 'Projects', 'Contact'];
       const activationLine = window.innerHeight * 0.38;
       let currentSection = sections[0];
 
@@ -34,6 +45,8 @@ export default function Navbar() {
       });
 
       setActiveSection(currentSection);
+      const currentLinkIndex = navLinks.findIndex(link => (link.section || link.name) === currentSection);
+      setSelectedLink(selected => (selected === currentLinkIndex ? null : selected));
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -47,37 +60,67 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const activePill = activePillRef.current;
+    const targetLink = navItemsRef.current[highlightedLinkIndex];
+    if (!activePill || !targetLink) return undefined;
 
-    const activePill = document.querySelector('.navbar-link-item.is-active .navbar-active-pill');
-    if (!activePill) return undefined;
+    const x = targetLink.offsetLeft;
+    const width = targetLink.offsetWidth;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(activePill, { x, width, opacity: 1, scaleX: 1, scaleY: 1 });
+      return undefined;
+    }
 
-    const intro = gsap.fromTo(
-      activePill,
-      { autoAlpha: 0, scale: 0.82 },
-      { autoAlpha: 1, scale: 1, duration: 0.55, ease: 'back.out(2)' },
-    );
-    const glow = gsap.to(activePill, {
-      boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18), 0 0 28px rgba(59,130,246,.36)',
-      duration: 1.5,
-      delay: 0.55,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    });
+    const currentX = Number(gsap.getProperty(activePill, 'x')) || 0;
+    const distance = Math.abs(x - currentX);
+    const stretch = Math.min(1.2, 1 + distance / 500);
+    const directionClass = x >= currentX ? 'is-moving-forward' : 'is-moving-backward';
+    activePill.classList.remove('is-long-jump', 'is-moving-forward', 'is-moving-backward');
+    if (distance > 140) {
+      activePill.classList.add('is-long-jump', directionClass);
+    }
+
+    const animation = gsap.timeline({
+      onComplete: () => activePill.classList.remove('is-long-jump', 'is-moving-forward', 'is-moving-backward'),
+    })
+      .to(activePill, {
+        x,
+        width,
+        opacity: 1,
+        scaleX: stretch,
+        scaleY: 1.08,
+        duration: 0.42,
+        ease: 'power3.out',
+      })
+      .to(activePill, {
+        scaleX: 1,
+        scaleY: 1,
+        duration: 0.45,
+        ease: 'elastic.out(1, 0.65)',
+      });
 
     return () => {
-      intro.kill();
-      glow.kill();
-      gsap.set(activePill, { clearProps: 'all' });
+      animation.kill();
+      activePill.classList.remove('is-long-jump', 'is-moving-forward', 'is-moving-backward');
     };
-  }, [activeSection]);
+  }, [activeSection, highlightedLinkIndex, clickRevision]);
 
-  const scrollTo = (e, href) => {
+  const scrollTo = (e, href, linkIndex) => {
     e.preventDefault();
     setMobileOpen(false);
     const target = document.querySelector(href);
     if (target) {
+      if (linkIndex !== undefined) {
+        setSelectedLink(linkIndex === activeLinkIndex ? null : linkIndex);
+        setClickRevision(revision => revision + 1);
+        const bounds = e.currentTarget.getBoundingClientRect();
+        setClickRipple({
+          id: ++rippleSequenceRef.current,
+          linkIndex,
+          x: e.detail === 0 ? bounds.width / 2 : e.clientX - bounds.left,
+          y: e.detail === 0 ? bounds.height / 2 : e.clientY - bounds.top,
+        });
+      }
       target.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -98,23 +141,35 @@ export default function Navbar() {
       >
         {/* Desktop Nav Items */}
         <nav className="navbar-links">
-          {navLinks.map((link) => {
+          <span ref={activePillRef} className="navbar-active-pill" aria-hidden="true" />
+          {navLinks.map((link, index) => {
             const isActive = activeSection === (link.section || link.name);
             return (
               <a
                 key={link.name}
+                ref={element => { navItemsRef.current[index] = element; }}
                 href={link.href}
-                onClick={(e) => scrollTo(e, link.href)}
+                onClick={(e) => scrollTo(e, link.href, index)}
                 className={`navbar-link-item ${isActive ? 'is-active' : ''}`}
               >
                 <span>{link.name}</span>
-                {isActive && <span className="navbar-active-pill" />}
+                {clickRipple?.linkIndex === index && (
+                  <span
+                    key={clickRipple.id}
+                    className="navbar-click-ripple"
+                    style={{ left: clickRipple.x, top: clickRipple.y }}
+                    onAnimationEnd={() => {
+                      setClickRipple(current => (current?.id === clickRipple.id ? null : current));
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
               </a>
             );
           })}
         </nav>
 
-        <span className="navbar-mobile-brand" aria-label="AlfariDev.">AlfariDev.</span>
+        <span className="navbar-mobile-brand" aria-label="Azizdev.">Azizdev.</span>
 
         {/* Sound and appearance controls */}
         <div className="navbar-actions">

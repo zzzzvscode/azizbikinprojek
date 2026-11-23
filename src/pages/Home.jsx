@@ -4,14 +4,14 @@ import ParticleBackground from '../components/ParticleBackground';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
+import FeaturedProjects from '../components/FeaturedProjects';
 import ExperienceEducation from '../components/ExperienceEducation';
 import SpotifyPlaylist from '../components/SpotifyPlaylist';
-import PortfolioSection from '../components/PortfolioSection';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import usePortfolioAnimations from '../hooks/usePortfolioAnimations';
 
-export default function Home({ onOpenProject }) {
+export default function Home() {
   const homeRef = useRef(null);
   const [introFinished, setIntroFinished] = useState(
     () => sessionStorage.getItem('portfolio-intro-finished') === 'true',
@@ -47,7 +47,7 @@ export default function Home({ onOpenProject }) {
           <About />
           <ExperienceEducation />
           <SpotifyPlaylist />
-          <PortfolioSection onOpenProject={onOpenProject} />
+          <FeaturedProjects />
           <Contact />
         </main>
 

@@ -1,17 +1,17 @@
 .spotify-section {
   position: relative;
-  padding: 64px 24px 140px;
+  padding: 40px 24px;
 }
 
 .spotify-card {
   position: relative;
   display: grid;
-  width: min(100%, 1200px);
+  width: min(100%, 1000px);
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
   gap: clamp(24px, 3vw, 40px);
   overflow: visible;
-  padding: clamp(24px, 3vw, 40px);
+  padding: clamp(24px, 3vw, 32px);
   margin: 0 auto;
   border: 1px solid rgba(94, 144, 255, 0.2);
   border-radius: 28px;
@@ -250,7 +250,7 @@
 
 @media (max-width: 760px) {
   .spotify-section {
-    padding: 48px 20px 64px;
+    padding: 40px 20px;
   }
 
   .spotify-card {
@@ -345,6 +345,13 @@
 
   .spotify-skeleton-track-artist {
     width: min(48%, 120px);
+  }
+}
+
+@media (max-width: 560px) {
+  .spotify-section {
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
 }
 

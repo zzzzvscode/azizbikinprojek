@@ -1,36 +1,73 @@
-# React + Vite
+# Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A personal website built with React and Vite. It includes profile, education, and contact sections. Supabase provides the contact-message backup.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 20.19+ or 22.12+
+- npm
+- A Supabase project for the contact form backup
 
-## Supabase comment rate limit
+## Run locally
 
-Comment submissions go through the `post-comment` Edge Function, which enforces
-a 120-second cooldown per client IP. Direct anonymous inserts into `comments`
-are disabled; public comment reads and realtime updates remain enabled.
-To change the enforced cooldown, edit `v_cooldown` in
-`supabase/comments.sql` and run that SQL again in the Supabase SQL Editor.
+1. Install the project dependencies:
 
-1. Link the Supabase CLI to the project with `supabase link --project-ref <project-ref>`.
-2. Set a private HMAC key of at least 32 random bytes:
-   `supabase secrets set COMMENT_RATE_LIMIT_SECRET="<random-secret>"`
-3. Deploy the public endpoint with
-   `supabase functions deploy post-comment --no-verify-jwt`.
-4. Run [`supabase/comments.sql`](./supabase/comments.sql) in the Supabase SQL Editor.
-5. Deploy the frontend after the function and SQL are ready.
+   ```bash
+   npm install
+   ```
 
-The function uses Supabase's server-provided `x-forwarded-for` header and stores
-only an HMAC of the client IP. Never expose the HMAC secret or service-role key
-in frontend environment variables.
+2. Create a local environment file from the example:
 
-## React Compiler
+   ```bash
+   cp .env.example .env.local
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+   On Windows PowerShell, use:
 
-## Expanding the Oxlint configuration
+   ```powershell
+   Copy-Item .env.example .env.local
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+3. Set the Supabase values in `.env.local`:
+
+   ```dotenv
+   VITE_SUPABASE_URL=https://your-project-id.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-supabase-anon-or-publishable-key
+   ```
+
+   Find these values in your Supabase project's API settings. The anon/publishable key is used by the browser and is not a substitute for database security; the SQL scripts below configure Row Level Security (RLS).
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open the local URL printed by Vite.
+
+## Supabase database setup
+
+1. Create a Supabase project and open its **SQL Editor**.
+2. Run [`supabase/contact_messages.sql`](./supabase/contact_messages.sql) to create the table used by the contact form.
+
+The contact form can insert messages, but public clients cannot read them.
+
+## Build and checks
+
+```bash
+npm run build
+npm run preview
+npm run lint
+```
+
+`npm run preview` serves the production build locally after `npm run build`.
+
+## Deploy the website
+
+The repository includes a Vercel configuration for client-side project-detail routes. To deploy with Vercel:
+
+1. Import the repository into Vercel.
+2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as project environment variables.
+3. Deploy the site.
+
+Make sure the Supabase SQL script has been applied before testing the contact feature.

@@ -16,7 +16,7 @@ export default function SpotifyPlaylist() {
           </p>
           <a
             className="spotify-open-link"
-            href="https://open.spotify.com/playlist/3XXwLc91K6JYhtotQO98S4"
+            href="https://open.spotify.com/playlist/0KxyJghvCqhb0TXtzVXydl"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -56,7 +56,7 @@ export default function SpotifyPlaylist() {
           <iframe
             className="spotify-embed"
             title="Spotify playlist: Daily Rotation"
-            src="https://open.spotify.com/embed/playlist/3XXwLc91K6JYhtotQO98S4?utm_source=generator&theme=0&si=8159cd1856464587"
+            src="https://open.spotify.com/embed/playlist/0KxyJghvCqhb0TXtzVXydl?utm_source=generator&theme=0&si=80f9c2d0dca04b24"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
             loading="lazy"

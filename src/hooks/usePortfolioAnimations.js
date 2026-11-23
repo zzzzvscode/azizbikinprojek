@@ -22,7 +22,7 @@ const createSectionReveal = (section, titleSelector, contentSelector, animateBlu
     y: 0,
     ...(animateBlur ? { filter: 'blur(0px)' } : {}),
   };
-  const trigger = titles[0] || section;
+  const trigger = section;
 
   const revealTargets = (targets, delay = 0, stagger = 0.12) => {
     if (!targets.length) return;
@@ -35,7 +35,8 @@ const createSectionReveal = (section, titleSelector, contentSelector, animateBlu
       scrollTrigger: {
         trigger,
         start: `top bottom-=${SECTION_REVEAL_OFFSET + delay}`,
-        toggleActions: 'play none none reverse',
+        toggleActions: 'play none none none',
+        once: true,
       },
     });
   };
@@ -77,11 +78,7 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
         ['.about-root-section', '.section-display-title', '.about-intro, .about-portrait-stage, .about-bio'],
         ['.experience-section', '.experience-group h2', '.experience-card, .experience-stat-card'],
         ['.spotify-section', '.spotify-copy h2', '.spotify-card'],
-        [
-          '.portfolio-root-section',
-          '.section-display-title',
-          '.portfolio-tab-bar, .portfolio-projects-view, .portfolio-skills-view, .portfolio-certificates-view, .portfolio-awards-view',
-        ],
+        ['.projects-section', '.projects-heading', '.project-card'],
         ['.contact-root-section', '.section-display-title', '.contact-panel'],
       ];
 
@@ -89,30 +86,6 @@ export default function usePortfolioAnimations(scopeRef, enabled) {
         const section = scope.querySelector(sectionSelector);
         if (section) createSectionReveal(section, titleSelector, contentSelector, animateBlur);
       });
-
-      const commentsPanel = scope.querySelector('.contact-comments-panel');
-      if (commentsPanel) {
-        gsap.fromTo(
-          commentsPanel,
-          {
-            autoAlpha: 0,
-            y: 24,
-            ...(animateBlur ? { filter: 'blur(6px)' } : {}),
-          },
-          {
-            autoAlpha: 1,
-            y: 0,
-            ...(animateBlur ? { filter: 'blur(0px)' } : {}),
-            duration: 0.65,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: commentsPanel,
-              start: `top bottom-=${SECTION_REVEAL_OFFSET + SECTION_CONTENT_REVEAL_DELAY}`,
-              toggleActions: 'play none none reverse',
-            },
-          },
-        );
-      }
     }, scope);
 
     ScrollTrigger.refresh();

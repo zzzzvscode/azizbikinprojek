@@ -1,9 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
-import frontCardImg from '../assets/lanyard/frontCard.webp';
-import mobileFrontCardImg from '../assets/lanyard/frontCard-mobile.webp';
-import backCardImg from '../assets/lanyard/backCard.webp';
-import mobileBackCardImg from '../assets/lanyard/backCard-mobile.webp';
-import bandImg from '../assets/lanyard/bandd.webp';
+import frontCardImg from '../assets/lanyard/frontCard.png';
+import backCardImg from '../assets/lanyard/backCard.png';
+import bandImg from '../assets/lanyard/bandd.png';
 import '../style/Lanyard.css';
 
 const Lanyard = lazy(() => import('./Lanyard'));
@@ -25,8 +23,8 @@ export default function LanyardCard({ introFinished }) {
       <div className="lanyard-viewport">
         <Suspense fallback={null}>
           <Lanyard
-            frontImage={isMobile ? mobileFrontCardImg : frontCardImg}
-            backImage={isMobile ? mobileBackCardImg : backCardImg}
+            frontImage={frontCardImg}
+            backImage={backCardImg}
             strapImage={bandImg}
             cardColor="#04010e09"
             imagePadding={0.035}

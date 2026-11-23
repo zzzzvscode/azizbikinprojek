@@ -6,8 +6,7 @@
   justify-content: center;
   align-items: stretch;
   overflow: hidden;
-  padding: 70px 32px 64px; /* angka pertama untuk atur margin title dng hero*/
-  margin-top: 100px;
+  padding: 112px 32px 40px;
   isolation: isolate;
 }
 
@@ -123,13 +122,8 @@
 .about-portrait {
   position: relative;
   z-index: 1;
-  min-width: 160%;
-  height: 100vh;
-  /* width: min(100%, 390px);
-  height: 100%; */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 76%, rgba(0, 0, 0, 0.74) 88%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 76%, rgba(0, 0, 0, 0.74) 88%, transparent 100%);
-  /* outline: 2px solid red; */
+  width: min(100%, 390px);
+  height: 100%;
 }
 
 .about-person-image,
@@ -138,69 +132,42 @@
   inset: 0;
   display: block;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   object-fit: contain;
   object-position: center bottom;
 }
 
 .about-person-image {
   z-index: 1;
-  object-fit: cover;
-  object-position: center bottom;
+  transform: scale(1.44);
+  transform-origin: center bottom;
   filter: drop-shadow(0 16px 35px rgba(0, 0, 0, 0.24));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0.65) 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0.65) 76%, transparent 100%);
 }
 
 .about-spider-image {
   z-index: 2;
   opacity: 0;
-  filter: saturate(1.12) contrast(1.05) drop-shadow(0 4px 18px rgba(220, 24, 52, 0.18));
-  -webkit-mask-image: radial-gradient(circle 115px at var(--hover-x, 50%) var(--hover-y, 50%), #000 0%, #000 58%, transparent 100%);
-  mask-image: radial-gradient(circle 115px at var(--hover-x, 50%) var(--hover-y, 50%), #000 0%, #000 58%, transparent 100%);
-  object-fit: cover;
-  transition: opacity 0.18s ease;
+  --spider-scale: 1.48;
+  transform: scale(var(--spider-scale));
+  transform-origin: center bottom;
+  filter: saturate(1.12) contrast(1.05) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+  -webkit-mask-image:
+    radial-gradient(circle 90px at var(--hover-x, 50%) var(--hover-y, 50%), #000 0%, #000 58%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0.55) 93%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(circle 90px at var(--hover-x, 50%) var(--hover-y, 50%), #000 0%, #000 58%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 80%, rgba(0, 0, 0, 0.55) 93%, transparent 100%);
+  mask-composite: intersect;
+  transition: opacity 0.25s ease;
 }
 
-.about-portrait-stage.is-in-view:not(.spider-hovered):not([data-spider-visible='true']) .about-spider-image {
-  -webkit-mask-image: none;
-  mask-image: none;
-  animation: idle-spider-blink 7s ease-in-out infinite;
-}
-
+.about-portrait-stage.spider-hovered .about-spider-image,
 .about-portrait-stage[data-spider-visible='true'] .about-spider-image {
-  opacity: 0.92;
+  opacity: 1;
   animation: none;
-}
-
-@keyframes idle-spider-blink {
-  0%, 38%, 100% {
-    opacity: 0;
-  }
-
-  8% {
-    opacity: 0.92;
-  }
-
-  22% {
-    opacity: 0.92;
-  }
-
-  38% {
-    opacity: 0;
-  }
-}
-
-@keyframes mobile-spider-blink {
-  0%, 45%, 100% {
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
-
-  55%, 88% {
-    opacity: 0.92;
-  }
 }
 
 .about-portrait-orbit {
@@ -296,8 +263,7 @@
 
   .about-root-section {
     min-height: auto;
-    margin-top: 0;
-    padding: 48px 22px 60px;
+    padding: 112px 22px 40px;
   }
 
   .about-container-inner {
@@ -338,17 +304,6 @@
     filter: none;
   }
 
-  .about-portrait-stage.is-in-view:not(.spider-hovered):not([data-spider-visible='true']) .about-spider-image {
-    animation: mobile-spider-blink 6s ease-in-out infinite;
-  }
-
-  .about-portrait-stage.spider-hovered .about-spider-image,
-  .about-portrait-stage[data-spider-visible='true'] .about-spider-image {
-    -webkit-mask-image: none;
-    mask-image: none;
-    animation: mobile-spider-blink 3s ease-in-out infinite;
-  }
-
   .about-portrait {
     width: min(100%, 700px);
     min-width: 0;
@@ -359,8 +314,15 @@
   .about-spider-image {
     height: 100%;
     object-fit: contain;
-    transform: scale(1.55);
     transform-origin: center bottom;
+  }
+
+  .about-person-image {
+    transform: scale(1.65);
+  }
+
+  .about-spider-image {
+    --spider-scale: 1.55;
   }
 
   .about-bio {
@@ -380,17 +342,16 @@
   }
 }
 
-@media (max-width: 620px) and (prefers-reduced-motion: reduce) {
-  .about-portrait-stage.spider-hovered .about-spider-image,
-  .about-portrait-stage[data-spider-visible='true'] .about-spider-image {
-    animation: none;
+@media (max-width: 560px) {
+  .about-root-section {
+    padding-top: 84px;
+    padding-bottom: 40px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .about-action,
-  .about-portrait-stage.is-in-view:not(.spider-hovered):not([data-spider-visible='true']) .about-spider-image {
+  .about-spider-image {
     transition: none;
-    animation: none;
   }
 }
